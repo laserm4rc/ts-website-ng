@@ -1,5 +1,10 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 // Zentrale Konfiguration. Alles kommt aus Umgebungsvariablen:
 // lokal aus der .env, später auf Pelican aus den Egg-Variablen.
+
+const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 /** Liest eine Ganzzahl aus einer Umgebungsvariable, leere Werte ergeben den Fallback. */
 function int(value, fallback) {
@@ -18,6 +23,18 @@ export const config = {
   // Erst einschalten, wenn später ein Reverse Proxy oder Cloudflare-Tunnel davor sitzt
   trustProxy: process.env.TRUST_PROXY === '1',
 
+  paths: {
+    root: rootDir,
+    views: path.join(rootDir, 'views'),
+    public: path.join(rootDir, 'public'),
+    data: process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : path.join(rootDir, 'data'),
+  },
+
+  // Sessions / Cookies
+  cookieSecure: process.env.COOKIE_SECURE === '1',
+  sessionDays: int(process.env.SESSION_DAYS, 7),
+
+  // Nur noch Vorschlag fürs Setup, danach kommt der Name aus der Datenbank
   site: {
     name: process.env.SITE_NAME || 'TeamSpeak Server',
   },

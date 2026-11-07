@@ -1,0 +1,41 @@
+<% layout('./layout') %>
+
+<% if (it.welcome) { %>
+  <div class="alert alert-success">
+    Einrichtung abgeschlossen. Willkommen, <strong><%= it.user.username %></strong>!
+  </div>
+<% } %>
+
+<h1 class="h3 mb-4">Dashboard</h1>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h5 card-title">TeamSpeak-Server</h2>
+        <% if (it.status.online) { %>
+          <p class="mb-1"><span class="badge text-bg-success">Online</span> <%= it.status.name %></p>
+          <p class="mb-0 text-body-secondary">
+            <%= it.status.clientsOnline %> / <%= it.status.maxClients %> Clients ·
+            Uptime <%= it.fmt.formatDuration(it.status.uptime) %>
+          </p>
+        <% } else { %>
+          <p class="mb-0"><span class="badge text-bg-danger">Offline</span> ServerQuery nicht erreichbar.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h5 card-title">Verwaltung</h2>
+        <ul class="mb-0">
+          <li><a href="/admin/settings">Einstellungen</a></li>
+          <li><a href="/admin/account">Passwort ändern</a></li>
+          <li class="text-body-secondary">News, Regeln, FAQ … folgen</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

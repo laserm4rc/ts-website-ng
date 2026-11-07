@@ -1,0 +1,26 @@
+<% layout('./admin/layout') %>
+
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-4">
+    <h1 class="h3 mb-3">Admin-Anmeldung</h1>
+
+    <% if (it.error) { %>
+      <div class="alert alert-danger"><%= it.error %></div>
+    <% } %>
+
+    <form method="post" action="/login" class="card card-body gap-3">
+      <input type="hidden" name="next" value="<%= it.next %>">
+      <div>
+        <label class="form-label" for="username">Benutzername</label>
+        <input class="form-control" id="username" name="username" required autocomplete="username"
+               value="<%= it.username %>" autofocus>
+      </div>
+      <div>
+        <label class="form-label" for="password">Passwort</label>
+        <input class="form-control" type="password" id="password" name="password" required
+               autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary">Anmelden</button>
+    </form>
+  </div>
+</div>

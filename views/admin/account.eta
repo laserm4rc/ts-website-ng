@@ -1,0 +1,35 @@
+<% layout('./layout') %>
+
+<h1 class="h3 mb-4">Mein Konto</h1>
+
+<% if (it.saved) { %>
+  <div class="alert alert-success">Passwort geändert. Andere Geräte wurden abgemeldet.</div>
+<% } %>
+<% if (it.errors.length > 0) { %>
+  <div class="alert alert-danger">
+    <ul class="mb-0"><% it.errors.forEach((error) => { %><li><%= error %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<form method="post" action="/admin/account" class="card card-body gap-3" style="max-width: 36rem">
+  <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+  <input type="text" name="username" value="<%= it.user.username %>" autocomplete="username" hidden>
+  <div>
+    <label class="form-label" for="currentPassword">Aktuelles Passwort</label>
+    <input class="form-control" type="password" id="currentPassword" name="currentPassword" required
+           autocomplete="current-password">
+  </div>
+  <div>
+    <label class="form-label" for="newPassword">Neues Passwort</label>
+    <input class="form-control" type="password" id="newPassword" name="newPassword" required minlength="10"
+           autocomplete="new-password">
+  </div>
+  <div>
+    <label class="form-label" for="newPasswordRepeat">Neues Passwort wiederholen</label>
+    <input class="form-control" type="password" id="newPasswordRepeat" name="newPasswordRepeat" required minlength="10"
+           autocomplete="new-password">
+  </div>
+  <div>
+    <button type="submit" class="btn btn-primary">Passwort ändern</button>
+  </div>
+</form>

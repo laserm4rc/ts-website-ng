@@ -1,0 +1,24 @@
+<% layout('./layout') %>
+
+<h1 class="h3 mb-4">Einstellungen</h1>
+
+<% if (it.saved) { %>
+  <div class="alert alert-success">Gespeichert.</div>
+<% } %>
+<% if (it.errors.length > 0) { %>
+  <div class="alert alert-danger">
+    <ul class="mb-0"><% it.errors.forEach((error) => { %><li><%= error %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<form method="post" action="/admin/settings" class="card card-body gap-3" style="max-width: 36rem">
+  <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+  <div>
+    <label class="form-label" for="siteName">Name der Webseite</label>
+    <input class="form-control" id="siteName" name="siteName" required maxlength="60"
+           value="<%= it.values.siteName %>">
+  </div>
+  <div>
+    <button type="submit" class="btn btn-primary">Speichern</button>
+  </div>
+</form>

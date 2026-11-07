@@ -1,15 +1,22 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
+import fastifyCookie from '@fastify/cookie';
+import fastifyFormbody from '@fastify/formbody';
 import { Eta } from 'eta';
 import { config } from './config.js';
 import { logger } from './logger.js';
+import { closeDb } from './db/index.js';
+import { getSetting } from './services/settings.js';
+import { purgeExpiredSessions } from './services/sessions.js';
+import { loadSession } from './auth/session.js';
+import { isSetupComplete } from './setup.js';
 import { getServerStatus } from './ts3/status.js';
 import { closeQuery } from './ts3/connection.js';
 import * as fmt from './utils/format.js';
-
-const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+import publicRoutes from './routes/public.js';
+import setupRoutes from './routes/setup.js';
+import authRoutes from './routes/auth.js';
+import adminRoutes from './routes/admin.js';
 
 export async function buildServer() {
   const app = Fastify({
@@ -19,47 +26,62 @@ export async function buildServer() {
   });
 
   // Template-Engine (im Development ohne Cache, damit Änderungen sofort sichtbar sind)
-  const eta = new Eta({
-    views: path.join(rootDir, 'views'),
-    cache: config.isProduction,
-  });
+  const eta = new Eta({ views: config.paths.views, cache: config.isProduction });
 
-  // reply.render('./seite', { ... }) rendert ein Template inkl. Server-Status für die Sidebar
+  // --- Plugins ---
+  await app.register(fastifyCookie);
+  await app.register(fastifyFormbody);
+  await app.register(fastifyStatic, { root: config.paths.public, prefix: '/static/' });
+
+  app.decorateRequest('user', null);
+  app.decorateRequest('session', null);
+
+  // reply.render('./seite', { ... }) – stellt allen Templates gemeinsame Daten bereit
   app.decorateReply('render', async function (template, data = {}) {
+    const request = this.request;
     const status = await getServerStatus();
-    const html = eta.render(template, { ...data, site: config.site, status, fmt });
+    const html = eta.render(template, {
+      ...data,
+      site: { name: getSetting('site_name', config.site.name) },
+      user: request.user,
+      csrf: request.session?.csrfToken ?? '',
+      path: request.url.split('?')[0].replace(/\/+$/, '') || '/',
+      status,
+      fmt,
+    });
     return this.type('text/html; charset=utf-8').send(html);
   });
 
-  // Statische Dateien (CSS, Bilder, JS) unter /static/
-  await app.register(fastifyStatic, {
-    root: path.join(rootDir, 'public'),
-    prefix: '/static/',
+  // --- Hooks ---
+  app.addHook('onRequest', loadSession);
+
+  // Solange kein Admin existiert, führt jeder Weg zur Einrichtung
+  app.addHook('onRequest', async (request, reply) => {
+    if (isSetupComplete()) return;
+    const url = request.url;
+    if (url.startsWith('/setup') || url.startsWith('/static/') || url.startsWith('/api/') || url === '/health') return;
+    return reply.redirect('/setup');
   });
 
-  // --- Seiten ---
-  app.get('/', async (request, reply) => {
-    return reply.render('./index', {
-      title: 'Startseite',
-      visitorIp: request.ip,
-    });
-  });
-
-  // --- API ---
-  app.get('/api/status', async () => getServerStatus());
-
-  app.get('/health', async () => ({
-    status: 'ok',
-    uptime: Math.round(process.uptime()),
-  }));
+  // --- Routen ---
+  await app.register(publicRoutes);
+  await app.register(setupRoutes);
+  await app.register(authRoutes);
+  await app.register(adminRoutes, { prefix: '/admin' });
 
   app.setNotFoundHandler(async (request, reply) => {
     return reply.code(404).render('./404', { title: 'Seite nicht gefunden' });
   });
 
-  // Query-Verbindung beim Herunterfahren sauber schließen
+  // --- Aufräumen ---
+  purgeExpiredSessions();
+  const purgeTimer = setInterval(purgeExpiredSessions, 60 * 60 * 1000);
+  purgeTimer.unref();
+
   app.addHook('onClose', async () => {
+    clearInterval(purgeTimer);
     await closeQuery();
+    closeDb();
   });
 
   return app;

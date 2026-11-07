@@ -1,0 +1,49 @@
+<% layout('./admin/layout') %>
+
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <h1 class="h3 mb-2">Ersteinrichtung</h1>
+    <p class="text-body-secondary">
+      Willkommen! Lege hier das erste Admin-Konto an. Das <strong>Setup-Token</strong> steht in der
+      Konsole: lokal im Terminal, auf Pelican in der Server-Konsole.
+    </p>
+
+    <% if (it.errors.length > 0) { %>
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          <% it.errors.forEach((error) => { %><li><%= error %></li><% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form method="post" action="/setup" class="card card-body gap-3">
+      <div>
+        <label class="form-label" for="setupToken">Setup-Token</label>
+        <input class="form-control font-monospace" id="setupToken" name="setupToken" required autocomplete="off">
+      </div>
+      <div>
+        <label class="form-label" for="siteName">Name der Webseite</label>
+        <input class="form-control" id="siteName" name="siteName" required maxlength="60"
+               value="<%= it.values.siteName %>">
+      </div>
+      <hr class="my-1">
+      <div>
+        <label class="form-label" for="username">Admin-Benutzername</label>
+        <input class="form-control" id="username" name="username" required maxlength="32"
+               autocomplete="username" value="<%= it.values.username %>">
+      </div>
+      <div>
+        <label class="form-label" for="password">Passwort</label>
+        <input class="form-control" type="password" id="password" name="password" required minlength="10"
+               autocomplete="new-password">
+        <div class="form-text">Mindestens 10 Zeichen.</div>
+      </div>
+      <div>
+        <label class="form-label" for="passwordRepeat">Passwort wiederholen</label>
+        <input class="form-control" type="password" id="passwordRepeat" name="passwordRepeat" required minlength="10"
+               autocomplete="new-password">
+      </div>
+      <button type="submit" class="btn btn-primary">Einrichtung abschließen</button>
+    </form>
+  </div>
+</div>
