@@ -28,7 +28,14 @@
   </nav>
 
   <main class="container py-4 flex-grow-1">
-    <%~ it.body %>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <%~ it.body %>
+      </div>
+      <aside class="col-lg-4">
+        <%~ include('./partials/status', it) %>
+      </aside>
+    </div>
   </main>
 
   <footer class="border-top py-3 text-center text-body-secondary small">
