@@ -1,0 +1,11 @@
+<% layout('./layout') %>
+
+<div class="card">
+  <div class="card-body">
+    <h1 class="h3 card-title">Es läuft! 🎉</h1>
+    <p class="card-text">Das Grundgerüst von ts-website-ng ist erreichbar.</p>
+    <p class="card-text mb-0">
+      Deine IP aus Sicht der Webseite: <code><%= it.visitorIp %></code>
+    </p>
+  </div>
+</div>
