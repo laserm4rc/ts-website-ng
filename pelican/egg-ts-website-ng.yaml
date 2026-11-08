@@ -1,0 +1,159 @@
+_comment: 'ts-website-ng egg for Pelican'
+meta:
+  version: PLCN_v3
+  update_url: null
+exported_at: '2026-11-08T12:00:00+00:00'
+name: 'ts-website-ng'
+author: laserm4rc@users.noreply.github.com
+uuid: 6f1d2c3a-9b4e-4f7a-8c21-3e5d7a9b1c04
+description: 'Website for a TeamSpeak 3 server. Pulls the code from GitHub on every start.'
+tags: {  }
+features: {  }
+docker_images:
+  'Nodejs 26': 'ghcr.io/pelican-eggs/yolks:nodejs_26'
+file_denylist: {  }
+startup_commands:
+  Default: 'if [[ -d .git ]] && [[ {{AUTO_UPDATE}} == "1" ]]; then git fetch origin {{BRANCH}} && git reset --hard FETCH_HEAD; fi; /usr/local/bin/npm install --omit=dev --no-audit --no-fund; exec /usr/local/bin/node --disable-warning=ExperimentalWarning index.js'
+config:
+  files: {  }
+  startup:
+    done:
+      - 'ts-website-ng bereit auf Port'
+  logs: {  }
+  stop: '^C'
+scripts:
+  installation:
+    script: |-
+      #!/bin/bash
+      set -e
+      apt-get update
+      apt-get install -y --no-install-recommends git ca-certificates
+
+      mkdir -p /mnt/server
+      cd /mnt/server
+      git config --global --add safe.directory /mnt/server
+
+      # Funktioniert auch bei einer Neuinstallation: data/ bleibt erhalten
+      if [ ! -d .git ]; then
+        git init
+        git remote add origin "${GIT_ADDRESS}"
+      fi
+      git remote set-url origin "${GIT_ADDRESS}"
+      git fetch origin "${BRANCH}"
+      git reset --hard FETCH_HEAD
+      echo "Installation abgeschlossen"
+    container: 'node:22-trixie-slim'
+    entrypoint: bash
+variables:
+  - sort: 1
+    name: 'Git Repository'
+    description: 'HTTPS address of the website repository.'
+    env_variable: GIT_ADDRESS
+    default_value: 'https://github.com/laserm4rc/ts-website-ng.git'
+    user_viewable: true
+    user_editable: true
+    rules: [required, string, max:255]
+  - sort: 2
+    name: 'Git Branch'
+    description: 'Branch to install and update from.'
+    env_variable: BRANCH
+    default_value: main
+    user_viewable: true
+    user_editable: true
+    rules: [required, string, max:64]
+  - sort: 3
+    name: 'Auto Update'
+    description: 'Download the latest code from GitHub on every start.'
+    env_variable: AUTO_UPDATE
+    default_value: '1'
+    user_viewable: true
+    user_editable: true
+    rules: [required, boolean]
+  - sort: 4
+    name: 'TS3 Host'
+    description: 'Address the website uses to reach the TeamSpeak server.'
+    env_variable: TS3_HOST
+    default_value: '152.53.109.220'
+    user_viewable: true
+    user_editable: true
+    rules: [required, string, max:255]
+  - sort: 5
+    name: 'TS3 Query Port'
+    description: 'ServerQuery port (raw).'
+    env_variable: TS3_QUERY_PORT
+    default_value: '10011'
+    user_viewable: true
+    user_editable: true
+    rules: [required, integer, 'between:1,65535']
+  - sort: 6
+    name: 'TS3 Query User'
+    description: 'ServerQuery login name.'
+    env_variable: TS3_QUERY_USER
+    default_value: serveradmin
+    user_viewable: true
+    user_editable: true
+    rules: [required, string, max:64]
+  - sort: 7
+    name: 'TS3 Query Password'
+    description: 'ServerQuery password.'
+    env_variable: TS3_QUERY_PASSWORD
+    default_value: ''
+    user_viewable: true
+    user_editable: true
+    rules: [required, string, max:255]
+  - sort: 8
+    name: 'TS3 Voice Port'
+    description: 'Voice port of the virtual server.'
+    env_variable: TS3_SERVER_PORT
+    default_value: '9987'
+    user_viewable: true
+    user_editable: true
+    rules: [required, integer, 'between:1,65535']
+  - sort: 9
+    name: 'Public TS3 Address'
+    description: 'Address visitors use to connect to the TeamSpeak server.'
+    env_variable: TS3_PUBLIC_ADDRESS
+    default_value: '152.53.109.220'
+    user_viewable: true
+    user_editable: true
+    rules: [required, string, max:255]
+  - sort: 10
+    name: 'Refresh Interval'
+    description: 'How often status, team box and viewer refresh (seconds).'
+    env_variable: TS3_CACHE_SECONDS
+    default_value: '4'
+    user_viewable: true
+    user_editable: true
+    rules: [required, integer, 'between:1,3600']
+  - sort: 11
+    name: 'Admin Idle Timeout'
+    description: 'Minutes without admin activity before a new sign-in is required.'
+    env_variable: SESSION_IDLE_MINUTES
+    default_value: '60'
+    user_viewable: true
+    user_editable: true
+    rules: [required, integer, 'between:1,10080']
+  - sort: 12
+    name: 'Secure Cookies'
+    description: 'Enable only when the website is served over HTTPS.'
+    env_variable: COOKIE_SECURE
+    default_value: '0'
+    user_viewable: true
+    user_editable: true
+    rules: [required, boolean]
+  - sort: 13
+    name: 'Trust Proxy'
+    description: 'Enable only behind a reverse proxy or tunnel.'
+    env_variable: TRUST_PROXY
+    default_value: '0'
+    user_viewable: true
+    user_editable: true
+    rules: [required, boolean]
+  - sort: 14
+    name: 'Log Level'
+    description: 'Console verbosity: trace, debug, info, warn, error or fatal.'
+    env_variable: LOG_LEVEL
+    default_value: info
+    user_viewable: true
+    user_editable: true
+    rules: [required, 'in:trace,debug,info,warn,error,fatal']
