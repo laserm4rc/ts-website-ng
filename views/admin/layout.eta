@@ -38,6 +38,9 @@
               <a class="nav-link<%= it.path === '/admin/pages/imprint' ? ' active' : '' %>" href="/admin/pages/imprint">Impressum</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link<%= it.path === '/admin/adminstatus' ? ' active' : '' %>" href="/admin/adminstatus">Admin-Status</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link<%= it.path === '/admin/settings' ? ' active' : '' %>" href="/admin/settings">Einstellungen</a>
             </li>
           </ul>

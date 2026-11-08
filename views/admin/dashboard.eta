@@ -35,6 +35,7 @@
           <li><a href="/admin/pages/rules">Regeln bearbeiten</a></li>
           <li><a href="/admin/faq">FAQ verwalten</a></li>
           <li><a href="/admin/pages/imprint">Impressum bearbeiten</a></li>
+          <li><a href="/admin/adminstatus">Admin-Status einstellen</a></li>
           <li><a href="/admin/settings">Einstellungen</a></li>
           <li><a href="/admin/account">Passwort ändern</a></li>
         </ul>

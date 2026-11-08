@@ -1,0 +1,40 @@
+<% layout('./layout') %>
+
+<h1 class="h3 mb-4">Admin-Status</h1>
+
+<% if (it.saved) { %>
+  <div class="alert alert-success">Gespeichert.</div>
+<% } %>
+
+<% if (!it.online) { %>
+  <div class="alert alert-warning">
+    Der TeamSpeak-Server ist nicht erreichbar, daher können die Gruppen gerade nicht geladen werden.
+  </div>
+<% } else { %>
+  <form method="post" action="/admin/adminstatus" class="card card-body gap-3" style="max-width: 36rem">
+    <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+
+    <div>
+      <div class="form-label">Diese Server-Gruppen gehören zum Team</div>
+      <% it.groups.forEach((group) => { %>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="group-<%= group.id %>" name="groups"
+                 value="<%= group.id %>"<%= it.selected.includes(group.id) ? ' checked' : '' %>>
+          <label class="form-check-label" for="group-<%= group.id %>"><%= group.name %></label>
+        </div>
+      <% }) %>
+      <div class="form-text">
+        Die Reihenfolge folgt der Sortierung in TeamSpeak. Wer in mehreren Gruppen ist, erscheint nur in der ersten.
+      </div>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="hideOffline" name="hideOffline" value="1"<%= it.hideOffline ? ' checked' : '' %>>
+      <label class="form-check-label" for="hideOffline">Offline-Mitglieder ausblenden</label>
+    </div>
+
+    <div>
+      <button type="submit" class="btn btn-primary">Speichern</button>
+    </div>
+  </form>
+<% } %>

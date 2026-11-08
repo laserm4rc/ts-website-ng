@@ -1,6 +1,7 @@
 import adminNewsRoutes from './admin-news.js';
 import adminPagesRoutes from './admin-pages.js';
 import adminFaqRoutes from './admin-faq.js';
+import adminStatusRoutes from './admin-adminstatus.js';
 
 import { config } from '../config.js';
 import { requireAdmin } from '../auth/session.js';
@@ -15,6 +16,7 @@ export default async function adminRoutes(app) {
   app.addHook('preHandler', requireAdmin);
   // Unterbereiche (erben Login-Pflicht und CSRF-Prüfung)
   await app.register(adminNewsRoutes, { prefix: '/news' });
+    await app.register(adminStatusRoutes, { prefix: '/adminstatus' });
 
   // --- Dashboard ---
   app.get('/', async (request, reply) => {

@@ -1,0 +1,8 @@
+<% if (it.group.iconId >= 1000) { %>
+  <img class="viewer-group-icon" src="/ts3-icon/<%= it.group.iconId %>" alt="<%= it.group.name %>"
+       title="<%= it.group.name %>" width="16" height="16" loading="lazy">
+<% } else if (it.group.iconId > 0) { %>
+  <i class="bi bi-shield-fill viewer-flag text-info" title="<%= it.group.name %>"></i>
+<% } else { %>
+  <span class="badge text-bg-secondary"><%= it.group.name %></span>
+<% } %>

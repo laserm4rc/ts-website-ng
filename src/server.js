@@ -6,6 +6,7 @@ import { Eta } from 'eta';
 import { config } from './config.js';
 import { logger } from './logger.js';
 import { closeDb } from './db/index.js';
+import { getAdminStatus } from './ts3/admin-status.js';
 import { getSetting } from './services/settings.js';
 import { purgeExpiredSessions } from './services/sessions.js';
 import { loadSession } from './auth/session.js';
@@ -18,6 +19,9 @@ import publicRoutes from './routes/public.js';
 import setupRoutes from './routes/setup.js';
 import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
+
+// Diese Templates zeigen keine Sidebar und brauchen die Team-Box nicht
+const NO_SIDEBAR = /^\.\/(admin\/|partials\/|login$|setup$)/;
 
 export async function buildServer() {
   const app = Fastify({
@@ -42,6 +46,7 @@ export async function buildServer() {
   app.decorateReply('render', async function (template, data = {}) {
     const request = this.request;
     const status = await getServerStatus();
+    const adminStatus = NO_SIDEBAR.test(template) ? null : await getAdminStatus();
     const html = eta.render(template, {
       ...data,
       site: { name: getSetting('site_name', config.site.name) },
@@ -49,6 +54,7 @@ export async function buildServer() {
       csrf: request.session?.csrfToken ?? '',
       path: request.url.split('?')[0].replace(/\/+$/, '') || '/',
       status,
+      adminStatus,
       fmt,
       md: renderMarkdown,
     });

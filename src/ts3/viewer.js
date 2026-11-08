@@ -3,8 +3,8 @@ import { getServerStatus } from './status.js';
 import { cached } from '../cache.js';
 import { config } from '../config.js';
 import { logger } from '../logger.js';
+import { loadServerGroups } from './groups.js';
 
-const GROUPS_TTL_MS = 5 * 60 * 1000; // Gruppen ändern sich selten
 const SPACER_PATTERN = /^\[([lcr*]?)spacer[^\]]*\](.*)$/i;
 const SPACER_ALIGN = { '': 'left', l: 'left', c: 'center', r: 'right', '*': 'fill' };
 
@@ -16,24 +16,6 @@ const CLIENT_STATES = {
 };
 
 const toInt = (value) => Number.parseInt(value ?? '0', 10) || 0;
-
-function loadServerGroups() {
-  return cached('ts3:servergroups', GROUPS_TTL_MS, async () => {
-    const rows = await query('servergrouplist');
-    return new Map(
-      rows.map((row) => [
-        toInt(row.sgid),
-        {
-          id: toInt(row.sgid),
-          name: row.name,
-          sortId: toInt(row.sortid),
-          iconId: toInt(row.iconid) >>> 0, // TS3 liefert Icon-IDs teils negativ
-          nameMode: toInt(row.namemode),
-        },
-      ]),
-    );
-  });
-}
 
 /** "[cspacer]Text" wird nur bei Channels auf oberster Ebene zum Spacer. */
 function parseSpacer(name, parentId) {
@@ -105,7 +87,7 @@ function mapClient(row, serverGroups) {
     isCommander: row.client_is_channel_commander === '1',
     isRecording: row.client_is_recording === '1',
     // Wie im TS-Client: nur Gruppen mit Icon oder Namenszusatz fallen auf
-    badges: groups.filter((group) => group.iconId !== 0 || group.nameMode !== 0).map((group) => group.name),
+    badges: groups.filter((group) => group.iconId !== 0 || group.nameMode !== 0),
   };
 }
 

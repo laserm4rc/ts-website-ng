@@ -1,0 +1,30 @@
+<% if (it.adminStatus && it.adminStatus.enabled) { %>
+  <div class="card shadow-sm mt-4">
+    <div class="card-header fw-semibold">Team</div>
+
+    <% if (!it.adminStatus.online) { %>
+      <div class="card-body text-body-secondary small">Der Status ist gerade nicht verfügbar.</div>
+    <% } else if (it.adminStatus.groups.length === 0) { %>
+      <div class="card-body text-body-secondary small">Gerade ist niemand vom Team online.</div>
+    <% } else { %>
+      <ul class="list-group list-group-flush small">
+        <% it.adminStatus.groups.forEach((group) => { %>
+          <li class="list-group-item">
+            <div class="d-flex align-items-center gap-2 fw-semibold mb-1">
+              <% if (group.iconId > 0) { %>
+                <%~ include('./group-icon', { group }) %>
+              <% } %>
+              <span><%= group.name %></span>
+            </div>
+            <% group.members.forEach((member) => { %>
+              <div class="d-flex justify-content-between align-items-center gap-2">
+                <span class="text-truncate"><%= member.nickname %></span>
+                <span class="badge <%= member.badge %>"><%= member.label %></span>
+              </div>
+            <% }) %>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </div>
+<% } %>

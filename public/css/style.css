@@ -68,3 +68,9 @@
 .viewer-spacer-right {
   text-align: right;
 }
+
+/* Eigene Gruppen-Icons vom TS3-Server */
+.viewer-group-icon {
+  flex: 0 0 auto;
+  object-fit: contain;
+}

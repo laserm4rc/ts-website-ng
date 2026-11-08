@@ -3,7 +3,7 @@
   <% if (channel.spacer) { %>
     <div class="viewer-spacer viewer-spacer-<%= channel.spacer.align %>"><%= channel.spacer.text || ' ' %></div>
   <% } else { %>
-        <div class="viewer-row" title="<%= channel.topic %>">
+    <div class="viewer-row" title="<%= channel.topic %>">
       <i class="bi <%= channel.icon %> viewer-icon text-body-secondary"></i>
       <span class="text-truncate"><%= channel.name %></span>
       <% if (channel.isDefault) { %>
@@ -25,8 +25,8 @@
             <% if (client.isRecording) { %>
               <i class="bi bi-record-circle-fill viewer-flag text-danger" title="Nimmt auf"></i>
             <% } %>
-            <% client.badges.forEach((badge) => { %>
-              <span class="badge text-bg-secondary"><%= badge %></span>
+            <% client.badges.forEach((group) => { %>
+              <%~ include('./group-icon', { group }) %>
             <% }) %>
           </div>
         </li>

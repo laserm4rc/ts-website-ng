@@ -35,6 +35,7 @@
       </div>
       <aside class="col-lg-4">
         <%~ include('./partials/status', it) %>
+        <%~ include('./partials/admin-status', it) %>
       </aside>
     </div>
   </main>
