@@ -34,7 +34,8 @@ export const config = {
 
   // Sessions / Cookies
   cookieSecure: process.env.COOKIE_SECURE === '1',
-  sessionDays: int(process.env.SESSION_DAYS, 7),
+  // Nach so vielen Minuten ohne Aktivität im Admin-Bereich ist eine neue Anmeldung nötig
+  sessionIdleMinutes: int(process.env.SESSION_IDLE_MINUTES, 60),
 
   // Nur noch Vorschlag fürs Setup, danach kommt der Name aus der Datenbank
   site: {
@@ -48,6 +49,6 @@ export const config = {
     queryPassword: process.env.TS3_QUERY_PASSWORD || '',
     serverPort: int(process.env.TS3_SERVER_PORT, 9987),
     publicAddress: process.env.TS3_PUBLIC_ADDRESS || process.env.TS3_HOST || '127.0.0.1',
-    cacheSeconds: int(process.env.TS3_CACHE_SECONDS, 30),
+    cacheSeconds: int(process.env.TS3_CACHE_SECONDS, 4),
   },
 };

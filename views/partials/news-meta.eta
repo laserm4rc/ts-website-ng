@@ -1,6 +1,6 @@
 <p class="small text-body-secondary mb-3">
   <%= it.fmt.formatDate(it.post.created_at) %>
-  <% if (it.post.author) { %> · von <%= it.post.author %><% } %>
-  <% if (it.post.updated_at) { %> · bearbeitet <%= it.fmt.formatDate(it.post.updated_at) %><% } %>
-  <% if (!it.post.published) { %> <span class="badge text-bg-warning">Entwurf</span><% } %>
+  <% if (it.post.author) { %> · <%= it.t('news.by', { author: it.post.author }) %><% } %>
+  <% if (it.post.updated_at) { %> · <%= it.t('news.edited', { date: it.fmt.formatDate(it.post.updated_at) }) %><% } %>
+  <% if (!it.post.published) { %> <span class="badge text-bg-warning"><%= it.t('news.draft') %></span><% } %>
 </p>

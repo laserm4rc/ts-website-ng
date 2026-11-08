@@ -1,8 +1,8 @@
 <% if (it.pages > 1) { %>
-  <nav aria-label="Seitennavigation">
+  <nav aria-label="<%= it.t('pagination.label') %>">
     <ul class="pagination justify-content-center">
       <li class="page-item<%= it.page <= 1 ? ' disabled' : '' %>">
-        <a class="page-link" href="<%= it.baseUrl %>?page=<%= it.page - 1 %>">« Neuer</a>
+        <a class="page-link" href="<%= it.baseUrl %>?page=<%= it.page - 1 %>"><%= it.t('pagination.newer') %></a>
       </li>
       <% for (let p = 1; p <= it.pages; p++) { %>
         <li class="page-item<%= p === it.page ? ' active' : '' %>">
@@ -10,7 +10,7 @@
         </li>
       <% } %>
       <li class="page-item<%= it.page >= it.pages ? ' disabled' : '' %>">
-        <a class="page-link" href="<%= it.baseUrl %>?page=<%= it.page + 1 %>">Älter »</a>
+        <a class="page-link" href="<%= it.baseUrl %>?page=<%= it.page + 1 %>"><%= it.t('pagination.older') %></a>
       </li>
     </ul>
   </nav>

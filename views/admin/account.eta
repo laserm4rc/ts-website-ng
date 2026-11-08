@@ -1,35 +1,91 @@
 <% layout('./layout') %>
 
-<h1 class="h3 mb-4">Mein Konto</h1>
+<h1 class="h3 mb-4"><%= it.t('admin.account.title') %></h1>
 
 <% if (it.saved) { %>
-  <div class="alert alert-success">Passwort geändert. Andere Geräte wurden abgemeldet.</div>
+  <div class="alert alert-success"><%= it.t('admin.account.saved') %></div>
+<% } %>
+<% if (it.tsNotice) { %>
+  <div class="alert alert-success"><%= it.tsNotice %></div>
 <% } %>
 <% if (it.errors.length > 0) { %>
   <div class="alert alert-danger">
     <ul class="mb-0"><% it.errors.forEach((error) => { %><li><%= error %></li><% }) %></ul>
   </div>
 <% } %>
+<% if (it.tsError) { %>
+  <div class="alert alert-danger"><%= it.tsError %></div>
+<% } %>
 
-<form method="post" action="/admin/account" class="card card-body gap-3" style="max-width: 36rem">
-  <input type="hidden" name="_csrf" value="<%= it.csrf %>">
-  <input type="text" name="username" value="<%= it.user.username %>" autocomplete="username" hidden>
-  <div>
-    <label class="form-label" for="currentPassword">Aktuelles Passwort</label>
-    <input class="form-control" type="password" id="currentPassword" name="currentPassword" required
-           autocomplete="current-password">
+<div class="d-flex flex-column gap-4" style="max-width: 36rem">
+  <div class="card card-body gap-3">
+    <h2 class="h5 mb-0"><%= it.t('admin.account.tsHeading') %></h2>
+
+    <% if (it.ts.linkedNickname) { %>
+      <p class="mb-0"><%= it.t('admin.account.tsLinked', { nickname: it.ts.linkedNickname }) %></p>
+      <form method="post" action="/admin/account/ts/unlink" data-confirm="<%= it.t('admin.account.tsConfirmUnlink') %>">
+        <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+        <button type="submit" class="btn btn-sm btn-outline-danger"><%= it.t('admin.account.tsUnlink') %></button>
+      </form>
+    <% } else if (it.ts.challenge) { %>
+      <p class="mb-0"><%= it.t('admin.account.tsCodeSent', { nickname: it.ts.challenge.nickname }) %></p>
+      <form method="post" action="/admin/account/ts/verify">
+        <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+        <label class="form-label" for="ts-code"><%= it.t('admin.account.tsCode') %></label>
+        <div class="input-group">
+          <input class="form-control font-monospace" id="ts-code" name="code" required inputmode="numeric"
+                 pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" autofocus>
+          <button type="submit" class="btn btn-primary"><%= it.t('admin.account.tsVerify') %></button>
+        </div>
+      </form>
+      <form method="post" action="/admin/account/ts/cancel">
+        <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+        <button type="submit" class="btn btn-sm btn-outline-secondary"><%= it.t('admin.account.tsCancel') %></button>
+      </form>
+    <% } else if (!it.ts.online) { %>
+      <p class="text-body-secondary mb-0"><%= it.t('common.tsUnreachable') %></p>
+    <% } else { %>
+      <p class="small text-body-secondary mb-0"><%= it.t('admin.account.tsIntro') %></p>
+      <% if (it.ts.clients.length === 0) { %>
+        <p class="text-body-secondary mb-0"><%= it.t('admin.account.tsNoClients') %></p>
+      <% } else { %>
+        <form method="post" action="/admin/account/ts/send">
+          <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+          <label class="form-label" for="ts-client"><%= it.t('admin.account.tsClient') %></label>
+          <div class="input-group">
+            <select class="form-select" id="ts-client" name="clid" required>
+              <% it.ts.clients.forEach((client) => { %>
+                <option value="<%= client.clid %>"><%= client.nickname %></option>
+              <% }) %>
+            </select>
+            <button type="submit" class="btn btn-primary"><%= it.t('admin.account.tsSend') %></button>
+          </div>
+        </form>
+      <% } %>
+    <% } %>
   </div>
-  <div>
-    <label class="form-label" for="newPassword">Neues Passwort</label>
-    <input class="form-control" type="password" id="newPassword" name="newPassword" required minlength="10"
-           autocomplete="new-password">
-  </div>
-  <div>
-    <label class="form-label" for="newPasswordRepeat">Neues Passwort wiederholen</label>
-    <input class="form-control" type="password" id="newPasswordRepeat" name="newPasswordRepeat" required minlength="10"
-           autocomplete="new-password">
-  </div>
-  <div>
-    <button type="submit" class="btn btn-primary">Passwort ändern</button>
-  </div>
-</form>
+
+  <form method="post" action="/admin/account" class="card card-body gap-3">
+    <h2 class="h5 mb-0"><%= it.t('admin.account.passwordHeading') %></h2>
+    <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+    <input type="text" name="username" value="<%= it.user.username %>" autocomplete="username" hidden>
+    <div>
+      <label class="form-label" for="currentPassword"><%= it.t('admin.account.currentPassword') %></label>
+      <input class="form-control" type="password" id="currentPassword" name="currentPassword" required
+             autocomplete="current-password">
+    </div>
+    <div>
+      <label class="form-label" for="newPassword"><%= it.t('admin.account.newPassword') %></label>
+      <input class="form-control" type="password" id="newPassword" name="newPassword" required minlength="10"
+             autocomplete="new-password">
+    </div>
+    <div>
+      <label class="form-label" for="newPasswordRepeat"><%= it.t('admin.account.newPasswordRepeat') %></label>
+      <input class="form-control" type="password" id="newPasswordRepeat" name="newPasswordRepeat" required minlength="10"
+             autocomplete="new-password">
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary"><%= it.t('admin.account.submit') %></button>
+    </div>
+  </form>
+</div>

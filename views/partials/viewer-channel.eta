@@ -7,7 +7,7 @@
       <i class="bi <%= channel.icon %> viewer-icon text-body-secondary"></i>
       <span class="text-truncate"><%= channel.name %></span>
       <% if (channel.isDefault) { %>
-        <i class="bi bi-house-door-fill viewer-flag" title="Standard-Channel"></i>
+        <i class="bi bi-house-door-fill viewer-flag" title="<%= it.t('viewer.defaultChannel') %>"></i>
       <% } %>
     </div>
   <% } %>
@@ -15,15 +15,16 @@
   <% if (channel.clients.length > 0 || channel.children.length > 0) { %>
     <ul class="viewer-list">
       <% channel.clients.forEach((client) => { %>
+        <% const label = client.awayMessage ? it.t('viewer.awayMessage', { message: client.awayMessage }) : it.t(client.labelKey) %>
         <li>
           <div class="viewer-row">
-            <i class="bi <%= client.icon %> <%= client.color %> viewer-icon" title="<%= client.label %>"></i>
+            <i class="bi <%= client.icon %> <%= client.color %> viewer-icon" title="<%= label %>"></i>
             <span class="text-truncate"><%= client.nickname %></span>
             <% if (client.isCommander) { %>
-              <i class="bi bi-star-fill viewer-flag text-warning" title="Channel Commander"></i>
+              <i class="bi bi-star-fill viewer-flag text-warning" title="<%= it.t('viewer.channelCommander') %>"></i>
             <% } %>
             <% if (client.isRecording) { %>
-              <i class="bi bi-record-circle-fill viewer-flag text-danger" title="Nimmt auf"></i>
+              <i class="bi bi-record-circle-fill viewer-flag text-danger" title="<%= it.t('viewer.recording') %>"></i>
             <% } %>
             <% client.badges.forEach((group) => { %>
               <%~ include('./group-icon', { group }) %>
@@ -32,7 +33,7 @@
         </li>
       <% }) %>
       <% channel.children.forEach((child) => { %>
-        <%~ include('./viewer-channel', { channel: child }) %>
+        <%~ include('./viewer-channel', { channel: child, t: it.t }) %>
       <% }) %>
     </ul>
   <% } %>

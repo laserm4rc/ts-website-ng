@@ -2,9 +2,11 @@ import { query } from './connection.js';
 import { cached, setCache } from '../cache.js';
 import { config } from '../config.js';
 import { logger } from '../logger.js';
+import { getSetting, setSetting } from '../services/settings.js';
 
 const CACHE_KEY = 'ts3:status';
 const OFFLINE_RETRY_MS = 10_000; // bei Fehler höchstens alle 10 s neu versuchen
+const TOP_ONLINE_KEY = 'top_online';
 let lastError = null;
 
 const toInt = (value) => Number.parseInt(value ?? '0', 10) || 0;
@@ -18,21 +20,40 @@ function connectInfo(port) {
   };
 }
 
+function platformIcon(platform) {
+  const name = String(platform ?? '').toLowerCase();
+  if (name.includes('windows')) return 'bi-windows';
+  if (name.includes('os x') || name.includes('macos')) return 'bi-apple';
+  return 'bi-terminal-fill';
+}
+
+/** TS3 kennt keinen Höchststand, darum merken wir uns das Maximum selbst. */
+function updateTopOnline(current) {
+  const top = getSetting(TOP_ONLINE_KEY, 0);
+  if (current <= top) return top;
+  setSetting(TOP_ONLINE_KEY, current);
+  return current;
+}
+
 async function loadStatus() {
   const [info] = await query('serverinfo');
   const port = toInt(info.virtualserver_port) || config.ts3.serverPort;
+  // Query-Clients (z. B. diese Webseite) nicht mitzählen
+  const clientsOnline = toInt(info.virtualserver_clientsonline) - toInt(info.virtualserver_queryclientsonline);
 
   return {
     online: true,
     name: info.virtualserver_name,
-    // Query-Clients (z. B. diese Webseite) nicht mitzählen
-    clientsOnline: toInt(info.virtualserver_clientsonline) - toInt(info.virtualserver_queryclientsonline),
+    clientsOnline,
+    topOnline: updateTopOnline(clientsOnline),
     maxClients: toInt(info.virtualserver_maxclients),
     reservedSlots: toInt(info.virtualserver_reserved_slots),
     channels: toInt(info.virtualserver_channelsonline),
     uptime: toInt(info.virtualserver_uptime),
-    version: info.virtualserver_version,
+    // "3.13.7 [Build: 1655727713]" -> "3.13.7"
+    version: String(info.virtualserver_version ?? '').split(' [')[0],
     platform: info.virtualserver_platform,
+    platformIcon: platformIcon(info.virtualserver_platform),
     ping: toFloat(info.virtualserver_total_ping),
     packetLoss: toFloat(info.virtualserver_total_packetloss_total) * 100,
     ...connectInfo(port),

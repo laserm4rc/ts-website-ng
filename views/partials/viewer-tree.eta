@@ -1,5 +1,5 @@
 <% if (!it.viewer.online) { %>
-  <p class="text-body-secondary mb-0">Der TeamSpeak-Server ist gerade nicht erreichbar.</p>
+  <p class="text-body-secondary mb-0"><%= it.t('common.tsUnreachable') %></p>
 <% } else { %>
   <div class="viewer-row fw-semibold">
     <i class="bi bi-hdd-network-fill viewer-icon"></i>
@@ -7,7 +7,7 @@
   </div>
   <ul class="viewer-list">
     <% it.viewer.channels.forEach((channel) => { %>
-      <%~ include('./viewer-channel', { channel }) %>
+      <%~ include('./viewer-channel', { channel, t: it.t }) %>
     <% }) %>
   </ul>
 <% } %>

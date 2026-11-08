@@ -4,9 +4,9 @@ import { str, toId } from '../utils/helpers.js';
 const LIMITS = { title: 150, summary: 1000, content: 50000 };
 
 const NOTICES = {
-  created: 'News angelegt.',
-  saved: 'Änderungen gespeichert.',
-  deleted: 'News gelöscht.',
+  created: 'admin.news.created',
+  saved: 'admin.news.saved',
+  deleted: 'admin.news.deleted',
 };
 
 function readForm(body = {}) {
@@ -18,17 +18,17 @@ function readForm(body = {}) {
   };
 }
 
-function validate(values) {
+function validate(values, t) {
   const errors = [];
-  if (!values.title) errors.push('Bitte einen Titel angeben.');
-  else if (values.title.length > LIMITS.title) errors.push(`Der Titel darf höchstens ${LIMITS.title} Zeichen haben.`);
+  if (!values.title) errors.push(t('admin.news.errorTitle'));
+  else if (values.title.length > LIMITS.title) errors.push(t('admin.news.errorTitleLength', { max: LIMITS.title }));
 
   if (values.summary.length > LIMITS.summary) {
-    errors.push(`Die Kurzfassung darf höchstens ${LIMITS.summary} Zeichen haben.`);
+    errors.push(t('admin.news.errorSummaryLength', { max: LIMITS.summary }));
   }
 
-  if (!values.content) errors.push('Bitte einen Text angeben.');
-  else if (values.content.length > LIMITS.content) errors.push(`Der Text darf höchstens ${LIMITS.content} Zeichen haben.`);
+  if (!values.content) errors.push(t('admin.news.errorContent'));
+  else if (values.content.length > LIMITS.content) errors.push(t('admin.news.errorContentLength', { max: LIMITS.content }));
 
   return errors;
 }
@@ -43,16 +43,16 @@ export default async function adminNewsRoutes(app) {
   app.get('/', async (request, reply) => {
     const key = request.query.notice;
     return reply.render('./admin/news-list', {
-      title: 'News',
+      title: request.t('news.title'),
       items: listAllNews(),
-      notice: Object.hasOwn(NOTICES, key) ? NOTICES[key] : null,
+      notice: Object.hasOwn(NOTICES, key) ? request.t(NOTICES[key]) : null,
     });
   });
 
   // Neu anlegen
   app.get('/new', async (request, reply) => {
     return reply.render('./admin/news-form', {
-      title: 'Neue News',
+      title: request.t('admin.news.new'),
       isNew: true,
       values: { title: '', summary: '', content: '', published: true },
       errors: [],
@@ -61,9 +61,9 @@ export default async function adminNewsRoutes(app) {
 
   app.post('/', async (request, reply) => {
     const values = readForm(request.body);
-    const errors = validate(values);
+    const errors = validate(values, request.t);
     if (errors.length > 0) {
-      return reply.code(400).render('./admin/news-form', { title: 'Neue News', isNew: true, values, errors });
+      return reply.code(400).render('./admin/news-form', { title: request.t('admin.news.new'), isNew: true, values, errors });
     }
 
     createNews({ ...values, authorId: request.user.id });
@@ -77,7 +77,7 @@ export default async function adminNewsRoutes(app) {
     if (!post) return notFound(reply);
 
     return reply.render('./admin/news-form', {
-      title: 'News bearbeiten',
+      title: request.t('admin.news.edit'),
       isNew: false,
       id,
       values: {
@@ -95,9 +95,9 @@ export default async function adminNewsRoutes(app) {
     if (!id || !getNews(id, { includeDrafts: true })) return notFound(reply);
 
     const values = readForm(request.body);
-    const errors = validate(values);
+    const errors = validate(values, request.t);
     if (errors.length > 0) {
-      return reply.code(400).render('./admin/news-form', { title: 'News bearbeiten', isNew: false, id, values, errors });
+      return reply.code(400).render('./admin/news-form', { title: request.t('admin.news.edit'), isNew: false, id, values, errors });
     }
 
     updateNews(id, values);

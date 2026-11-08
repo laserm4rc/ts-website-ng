@@ -1,8 +1,8 @@
 <% layout('./layout') %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1 class="h3 mb-0"><%= it.isNew ? 'Neue News' : 'News bearbeiten' %></h1>
-  <a href="/admin/news" class="btn btn-sm btn-outline-secondary">Zurück zur Übersicht</a>
+  <h1 class="h3 mb-0"><%= it.title %></h1>
+  <a href="/admin/news" class="btn btn-sm btn-outline-secondary"><%= it.t('common.backToList') %></a>
 </div>
 
 <% if (it.errors.length > 0) { %>
@@ -11,41 +11,40 @@
   </div>
 <% } %>
 
-<form method="post" action="<%= it.isNew ? '/admin/news' : `/admin/news/${it.id}` %>" class="card card-body gap-3">
+<form method="post" action="/admin/news<%= it.isNew ? '' : '/' + it.id %>" class="card card-body gap-3">
   <input type="hidden" name="_csrf" value="<%= it.csrf %>">
 
   <div>
-    <label class="form-label" for="title">Titel</label>
+    <label class="form-label" for="title"><%= it.t('admin.news.fieldTitle') %></label>
     <input class="form-control" id="title" name="title" required maxlength="150" value="<%= it.values.title %>">
   </div>
 
   <div>
-    <label class="form-label" for="summary">Kurzfassung <span class="text-body-secondary">(optional)</span></label>
+    <label class="form-label" for="summary"><%= it.t('admin.news.fieldSummary') %> <span class="text-body-secondary"><%= it.t('common.optional') %></span></label>
     <textarea class="form-control" id="summary" name="summary" rows="3" maxlength="1000"><%= it.values.summary %></textarea>
-    <div class="form-text">
-      Wird in der Übersicht mit „Weiterlesen“-Button angezeigt. Leer lassen, um dort den ganzen Text zu zeigen.
-    </div>
+    <div class="form-text"><%= it.t('admin.news.summaryHint') %></div>
   </div>
 
   <div>
-    <label class="form-label" for="content">Text</label>
+    <label class="form-label" for="content"><%= it.t('admin.news.fieldContent') %></label>
     <textarea class="form-control font-monospace" id="content" name="content" rows="14" required
               maxlength="50000"><%= it.values.content %></textarea>
     <div class="form-text">
-      Markdown: <code>**fett**</code>, <code>*kursiv*</code>, <code>[Link](https://…)</code>,
-      <code>- Aufzählung</code>, <code>## Überschrift</code>, <code>![Bild](https://…)</code>
+      Markdown: <code>**<%= it.t('admin.markdown.bold') %>**</code>, <code>*<%= it.t('admin.markdown.italic') %>*</code>,
+      <code>[Link](https://…)</code>, <code>- <%= it.t('admin.markdown.list') %></code>,
+      <code>## <%= it.t('admin.markdown.heading') %></code>, <code>![<%= it.t('admin.markdown.image') %>](https://…)</code>
     </div>
   </div>
 
   <div class="form-check">
     <input class="form-check-input" type="checkbox" id="published" name="published" value="1"<%= it.values.published ? ' checked' : '' %>>
-    <label class="form-check-label" for="published">Veröffentlicht (sonst Entwurf)</label>
+    <label class="form-check-label" for="published"><%= it.t('admin.news.fieldPublished') %></label>
   </div>
 
   <div class="d-flex gap-2">
-    <button type="submit" class="btn btn-primary">Speichern</button>
-    <% if (!it.isNew) { %>
-      <a href="/news/<%= it.id %>" target="_blank" class="btn btn-outline-secondary">Ansehen</a>
+    <button type="submit" class="btn btn-primary"><%= it.t('common.save') %></button>
+    <% if (!it.isNew && it.visible.news) { %>
+      <a href="/news/<%= it.id %>" target="_blank" class="btn btn-outline-secondary"><%= it.t('common.view') %></a>
     <% } %>
   </div>
 </form>

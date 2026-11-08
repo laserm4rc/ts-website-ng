@@ -14,7 +14,8 @@ export default async function setupRoutes(app) {
   app.get('/setup', async (request, reply) => {
     if (isSetupComplete()) return reply.redirect('/');
     return reply.render('./setup', {
-      title: 'Ersteinrichtung',
+      title: request.t('setup.title'),
+      minPassword: MIN_PASSWORD_LENGTH,
       values: { siteName: getSetting('site_name', config.site.name), username: '' },
       errors: [],
     });
@@ -28,24 +29,21 @@ export default async function setupRoutes(app) {
     const password = typeof body.password === 'string' ? body.password : '';
     const errors = [];
 
-    if (!checkSetupToken(body.setupToken)) {
-      errors.push('Das Setup-Token ist falsch. Du findest es in der Konsole.');
-    }
-    if (values.siteName.length < 2 || values.siteName.length > 60) {
-      errors.push('Der Name der Webseite muss 2–60 Zeichen lang sein.');
-    }
-    if (!USERNAME_PATTERN.test(values.username)) {
-      errors.push('Benutzername: 3–32 Zeichen, nur Buchstaben, Zahlen sowie _ . -');
-    }
+    if (!checkSetupToken(body.setupToken)) errors.push(request.t('setup.errorToken'));
+    if (values.siteName.length < 2 || values.siteName.length > 60) errors.push(request.t('setup.errorSiteName'));
+    if (!USERNAME_PATTERN.test(values.username)) errors.push(request.t('setup.errorUsername'));
     if (password.length < MIN_PASSWORD_LENGTH || password.length > 256) {
-      errors.push(`Das Passwort muss mindestens ${MIN_PASSWORD_LENGTH} Zeichen lang sein.`);
+      errors.push(request.t('setup.errorPassword', { min: MIN_PASSWORD_LENGTH }));
     }
-    if (password !== body.passwordRepeat) {
-      errors.push('Die Passwörter stimmen nicht überein.');
-    }
+    if (password !== body.passwordRepeat) errors.push(request.t('setup.errorPasswordRepeat'));
 
     if (errors.length > 0) {
-      return reply.code(400).render('./setup', { title: 'Ersteinrichtung', values, errors });
+      return reply.code(400).render('./setup', {
+        title: request.t('setup.title'),
+        minPassword: MIN_PASSWORD_LENGTH,
+        values,
+        errors,
+      });
     }
 
     setupRunning = true;

@@ -1,0 +1,2 @@
+<%~ include('./status', it) %>
+<%~ include('./admin-status', it) %>

@@ -12,6 +12,10 @@ function notFound(reply) {
   return reply;
 }
 
+function editTitle(request, page) {
+  return request.t('admin.pages.editTitle', { title: request.t(page.titleKey) });
+}
+
 export default async function adminPagesRoutes(app) {
   app.get('/:slug', async (request, reply) => {
     const { slug } = request.params;
@@ -19,7 +23,7 @@ export default async function adminPagesRoutes(app) {
     if (!page) return notFound(reply);
 
     return reply.render('./admin/page-form', {
-      title: `${page.title} bearbeiten`,
+      title: editTitle(request, page),
       slug,
       page,
       content: getPage(slug)?.content ?? '',
@@ -36,11 +40,11 @@ export default async function adminPagesRoutes(app) {
     const content = str(request.body?.content);
     if (content.length > MAX_LENGTH) {
       return reply.code(400).render('./admin/page-form', {
-        title: `${page.title} bearbeiten`,
+        title: editTitle(request, page),
         slug,
         page,
         content,
-        errors: [`Der Text darf höchstens ${MAX_LENGTH} Zeichen haben.`],
+        errors: [request.t('admin.pages.errorLength', { max: MAX_LENGTH })],
         saved: false,
       });
     }

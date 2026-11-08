@@ -69,6 +69,57 @@
   text-align: right;
 }
 
+/* Seitenleiste: Server-Status und Admin-Status */
+.sidebar-list,
+.team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.sidebar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.sidebar-icon {
+  flex: 0 0 1.25rem;
+  text-align: center;
+  color: var(--bs-secondary-color);
+}
+
+.sidebar-label {
+  flex: 0 0 auto;
+  color: var(--bs-secondary-color);
+}
+
+.sidebar-value {
+  flex: 0 1 auto;
+  margin-left: auto;
+}
+
+.team-list {
+  gap: 1rem;
+}
+
+.team-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.team-group-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 1.15rem;
+  color: var(--bs-secondary-color);
+}
+
 /* Eigene Gruppen-Icons vom TS3-Server */
 .viewer-group-icon {
   flex: 0 0 auto;

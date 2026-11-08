@@ -4,18 +4,28 @@ import { config } from '../config.js';
 
 const hashToken = (token) => createHash('sha256').update(token).digest('hex');
 
+const IDLE_MS = config.sessionIdleMinutes * 60 * 1000;
+const TOUCH_INTERVAL_MS = 60 * 1000; // höchstens einmal pro Minute in die Datenbank schreiben
+
 export function createSession(userId) {
   const token = randomBytes(32).toString('base64url');
   const csrfToken = randomBytes(24).toString('base64url');
-  const expiresAt = Date.now() + config.sessionDays * 24 * 60 * 60 * 1000;
 
   db.prepare('INSERT INTO sessions (id, user_id, csrf_token, expires_at) VALUES (?, ?, ?, ?)').run(
     hashToken(token),
     userId,
     csrfToken,
-    expiresAt,
+    Date.now() + IDLE_MS,
   );
-  return { token, expiresAt };
+  return token;
+}
+
+/** Aktivität im Admin-Bereich verlängert die Anmeldung. */
+export function touchSession(session) {
+  const expiresAt = Date.now() + IDLE_MS;
+  if (expiresAt - session.expiresAt < TOUCH_INTERVAL_MS) return;
+  db.prepare('UPDATE sessions SET expires_at = ? WHERE id = ?').run(expiresAt, session.id);
+  session.expiresAt = expiresAt;
 }
 
 export function getSession(token) {
@@ -38,6 +48,7 @@ export function getSession(token) {
 
   return {
     id: row.id,
+    expiresAt: row.expires_at,
     csrfToken: row.csrf_token,
     user: { id: row.user_id, username: row.username },
   };

@@ -4,22 +4,22 @@ import { str, toId } from '../utils/helpers.js';
 const LIMITS = { question: 200, answer: 10000 };
 
 const NOTICES = {
-  created: 'Frage angelegt.',
-  saved: 'Änderungen gespeichert.',
-  deleted: 'Frage gelöscht.',
+  created: 'admin.faq.created',
+  saved: 'admin.faq.saved',
+  deleted: 'admin.faq.deleted',
 };
 
 function readForm(body = {}) {
   return { question: str(body.question), answer: str(body.answer) };
 }
 
-function validate(values) {
+function validate(values, t) {
   const errors = [];
-  if (!values.question) errors.push('Bitte eine Frage angeben.');
-  else if (values.question.length > LIMITS.question) errors.push(`Die Frage darf höchstens ${LIMITS.question} Zeichen haben.`);
+  if (!values.question) errors.push(t('admin.faq.errorQuestion'));
+  else if (values.question.length > LIMITS.question) errors.push(t('admin.faq.errorQuestionLength', { max: LIMITS.question }));
 
-  if (!values.answer) errors.push('Bitte eine Antwort angeben.');
-  else if (values.answer.length > LIMITS.answer) errors.push(`Die Antwort darf höchstens ${LIMITS.answer} Zeichen haben.`);
+  if (!values.answer) errors.push(t('admin.faq.errorAnswer'));
+  else if (values.answer.length > LIMITS.answer) errors.push(t('admin.faq.errorAnswerLength', { max: LIMITS.answer }));
 
   return errors;
 }
@@ -34,16 +34,16 @@ export default async function adminFaqRoutes(app) {
   app.get('/', async (request, reply) => {
     const key = request.query.notice;
     return reply.render('./admin/faq-list', {
-      title: 'FAQ',
+      title: request.t('admin.faq.title'),
       items: listFaq(),
-      notice: Object.hasOwn(NOTICES, key) ? NOTICES[key] : null,
+      notice: Object.hasOwn(NOTICES, key) ? request.t(NOTICES[key]) : null,
     });
   });
 
   // Neu anlegen
   app.get('/new', async (request, reply) => {
     return reply.render('./admin/faq-form', {
-      title: 'Neue Frage',
+      title: request.t('admin.faq.new'),
       isNew: true,
       values: { question: '', answer: '' },
       errors: [],
@@ -52,9 +52,9 @@ export default async function adminFaqRoutes(app) {
 
   app.post('/', async (request, reply) => {
     const values = readForm(request.body);
-    const errors = validate(values);
+    const errors = validate(values, request.t);
     if (errors.length > 0) {
-      return reply.code(400).render('./admin/faq-form', { title: 'Neue Frage', isNew: true, values, errors });
+      return reply.code(400).render('./admin/faq-form', { title: request.t('admin.faq.new'), isNew: true, values, errors });
     }
 
     createFaq(values);
@@ -68,7 +68,7 @@ export default async function adminFaqRoutes(app) {
     if (!item) return notFound(reply);
 
     return reply.render('./admin/faq-form', {
-      title: 'Frage bearbeiten',
+      title: request.t('admin.faq.edit'),
       isNew: false,
       id,
       values: { question: item.question, answer: item.answer },
@@ -81,9 +81,9 @@ export default async function adminFaqRoutes(app) {
     if (!id || !getFaq(id)) return notFound(reply);
 
     const values = readForm(request.body);
-    const errors = validate(values);
+    const errors = validate(values, request.t);
     if (errors.length > 0) {
-      return reply.code(400).render('./admin/faq-form', { title: 'Frage bearbeiten', isNew: false, id, values, errors });
+      return reply.code(400).render('./admin/faq-form', { title: request.t('admin.faq.edit'), isNew: false, id, values, errors });
     }
 
     updateFaq(id, values);

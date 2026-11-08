@@ -2,25 +2,25 @@
 
 <% if (it.welcome) { %>
   <div class="alert alert-success">
-    Einrichtung abgeschlossen. Willkommen, <strong><%= it.user.username %></strong>!
+    <%= it.t('admin.dashboard.welcome', { username: it.user.username }) %>
   </div>
 <% } %>
 
-<h1 class="h3 mb-4">Dashboard</h1>
+<h1 class="h3 mb-4"><%= it.t('admin.nav.dashboard') %></h1>
 
 <div class="row g-4">
   <div class="col-md-6">
     <div class="card h-100">
       <div class="card-body">
-        <h2 class="h5 card-title">TeamSpeak-Server</h2>
+        <h2 class="h5 card-title"><%= it.t('admin.dashboard.server') %></h2>
         <% if (it.status.online) { %>
-          <p class="mb-1"><span class="badge text-bg-success">Online</span> <%= it.status.name %></p>
+          <p class="mb-1"><span class="badge text-bg-success"><%= it.t('common.online') %></span> <%= it.status.name %></p>
           <p class="mb-0 text-body-secondary">
-            <%= it.status.clientsOnline %> / <%= it.status.maxClients %> Clients ·
-            Uptime <%= it.fmt.formatDuration(it.status.uptime) %>
+            <%= it.t('admin.dashboard.clients', { online: it.status.clientsOnline, max: it.status.maxClients }) %> ·
+            <%= it.t('admin.dashboard.uptime', { duration: it.fmt.formatDuration(it.status.uptime) }) %>
           </p>
         <% } else { %>
-          <p class="mb-0"><span class="badge text-bg-danger">Offline</span> ServerQuery nicht erreichbar.</p>
+          <p class="mb-0"><span class="badge text-bg-danger"><%= it.t('common.offline') %></span> <%= it.t('admin.dashboard.queryUnreachable') %></p>
         <% } %>
       </div>
     </div>
@@ -29,15 +29,15 @@
   <div class="col-md-6">
     <div class="card h-100">
       <div class="card-body">
-        <h2 class="h5 card-title">Verwaltung</h2>
+        <h2 class="h5 card-title"><%= it.t('admin.dashboard.manage') %></h2>
         <ul class="mb-0">
-          <li><a href="/admin/news">News verwalten</a></li>
-          <li><a href="/admin/pages/rules">Regeln bearbeiten</a></li>
-          <li><a href="/admin/faq">FAQ verwalten</a></li>
-          <li><a href="/admin/pages/imprint">Impressum bearbeiten</a></li>
-          <li><a href="/admin/adminstatus">Admin-Status einstellen</a></li>
-          <li><a href="/admin/settings">Einstellungen</a></li>
-          <li><a href="/admin/account">Passwort ändern</a></li>
+          <li><a href="/admin/news"><%= it.t('admin.dashboard.manageNews') %></a></li>
+          <li><a href="/admin/pages/rules"><%= it.t('admin.dashboard.editRules') %></a></li>
+          <li><a href="/admin/faq"><%= it.t('admin.dashboard.manageFaq') %></a></li>
+          <li><a href="/admin/pages/imprint"><%= it.t('admin.dashboard.editImprint') %></a></li>
+          <li><a href="/admin/adminstatus"><%= it.t('admin.dashboard.configureAdminStatus') %></a></li>
+          <li><a href="/admin/settings"><%= it.t('admin.settings.title') %></a></li>
+          <li><a href="/admin/account"><%= it.t('admin.dashboard.changePassword') %></a></li>
         </ul>
       </div>
     </div>

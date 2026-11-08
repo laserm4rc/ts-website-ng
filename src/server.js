@@ -1,3 +1,4 @@
+import path from 'node:path';
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyCookie from '@fastify/cookie';
@@ -8,12 +9,14 @@ import { logger } from './logger.js';
 import { closeDb } from './db/index.js';
 import { getAdminStatus } from './ts3/admin-status.js';
 import { getSetting } from './services/settings.js';
+import { getSectionVisibility } from './services/sections.js';
 import { purgeExpiredSessions } from './services/sessions.js';
 import { loadSession } from './auth/session.js';
 import { isSetupComplete } from './setup.js';
 import { getServerStatus } from './ts3/status.js';
 import { closeQuery } from './ts3/connection.js';
-import * as fmt from './utils/format.js';
+import { translate } from './i18n/index.js';
+import { fmt } from './utils/format.js';
 import { renderMarkdown } from './utils/markdown.js';
 import publicRoutes from './routes/public.js';
 import setupRoutes from './routes/setup.js';
@@ -21,7 +24,13 @@ import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
 
 // Diese Templates zeigen keine Sidebar und brauchen die Team-Box nicht
-const NO_SIDEBAR = /^\.\/(admin\/|partials\/|login$|setup$)/;
+const NO_SIDEBAR = /^\.\/(admin\/|partials\/(?!sidebar$)|login$|setup$)/;
+
+// Diese Pfade funktionieren auch, solange die Einrichtung noch nicht abgeschlossen ist
+const SETUP_ALLOWED = ['/setup', '/static/', '/vendor/', '/api/'];
+
+// Die Seite lädt so oft nach, wie die Daten vom TS3-Server zwischengespeichert werden
+const liveSeconds = Math.max(config.ts3.cacheSeconds, 1);
 
 export async function buildServer() {
   const app = Fastify({
@@ -39,8 +48,24 @@ export async function buildServer() {
   await app.register(fastifyFormbody);
   await app.register(fastifyStatic, { root: config.paths.public, prefix: '/static/' });
 
+  // Bootstrap kommt aus node_modules statt von einem fremden CDN
+  const nodeModules = path.join(config.paths.root, 'node_modules');
+  await app.register(fastifyStatic, {
+    root: path.join(nodeModules, 'bootstrap', 'dist'),
+    prefix: '/vendor/bootstrap/',
+    decorateReply: false,
+    maxAge: '7d',
+  });
+  await app.register(fastifyStatic, {
+    root: path.join(nodeModules, 'bootstrap-icons', 'font'),
+    prefix: '/vendor/bootstrap-icons/',
+    decorateReply: false,
+    maxAge: '7d',
+  });
+
   app.decorateRequest('user', null);
   app.decorateRequest('session', null);
+  app.decorateRequest('t', translate);
 
   // reply.render('./seite', { ... }) – stellt allen Templates gemeinsame Daten bereit
   app.decorateReply('render', async function (template, data = {}) {
@@ -50,11 +75,14 @@ export async function buildServer() {
     const html = eta.render(template, {
       ...data,
       site: { name: getSetting('site_name', config.site.name) },
+      visible: getSectionVisibility(),
       user: request.user,
       csrf: request.session?.csrfToken ?? '',
       path: request.url.split('?')[0].replace(/\/+$/, '') || '/',
+      liveSeconds,
       status,
       adminStatus,
+      t: translate,
       fmt,
       md: renderMarkdown,
     });
@@ -68,8 +96,14 @@ export async function buildServer() {
   app.addHook('onRequest', async (request, reply) => {
     if (isSetupComplete()) return;
     const url = request.url;
-    if (url.startsWith('/setup') || url.startsWith('/static/') || url.startsWith('/api/') || url === '/health') return;
+    if (url === '/health' || SETUP_ALLOWED.some((prefix) => url.startsWith(prefix))) return;
     return reply.redirect('/setup');
+  });
+
+  app.addHook('onSend', async (request, reply) => {
+    reply.header('X-Content-Type-Options', 'nosniff');
+    reply.header('X-Frame-Options', 'DENY');
+    reply.header('Referrer-Policy', 'same-origin');
   });
 
   // --- Routen ---
@@ -79,7 +113,7 @@ export async function buildServer() {
   await app.register(adminRoutes, { prefix: '/admin' });
 
   app.setNotFoundHandler(async (request, reply) => {
-    return reply.code(404).render('./404', { title: 'Seite nicht gefunden' });
+    return reply.code(404).render('./404', { title: request.t('notFound.title') });
   });
 
   // --- Aufräumen ---

@@ -2,8 +2,8 @@ import { db } from '../db/index.js';
 
 // Alle Textseiten an einer Stelle. Eine neue Seite braucht später nur einen Eintrag hier.
 export const PAGES = {
-  rules: { title: 'Regeln', path: '/rules' },
-  imprint: { title: 'Impressum', path: '/imprint' },
+  rules: { titleKey: 'nav.rules', path: '/rules' },
+  imprint: { titleKey: 'nav.imprint', path: '/imprint' },
 };
 
 export function getPage(slug) {

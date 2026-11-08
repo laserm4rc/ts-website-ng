@@ -1,9 +1,9 @@
 <% layout('./layout') %>
 
-<h1 class="visually-hidden">News</h1>
+<h1 class="visually-hidden"><%= it.t('news.title') %></h1>
 
 <% if (it.news.items.length === 0) { %>
-  <div class="card card-body text-body-secondary">Noch keine News vorhanden.</div>
+  <div class="card card-body text-body-secondary"><%= it.t('news.empty') %></div>
 <% } %>
 
 <% it.news.items.forEach((post) => { %>
@@ -12,12 +12,12 @@
       <h2 class="h4 card-title">
         <a href="/news/<%= post.id %>" class="link-body-emphasis text-decoration-none"><%= post.title %></a>
       </h2>
-      <%~ include('./partials/news-meta', { post, fmt: it.fmt }) %>
+      <%~ include('./partials/news-meta', { post, fmt: it.fmt, t: it.t }) %>
 
       <div class="news-content">
         <% if (post.summary) { %>
           <%~ it.md(post.summary) %>
-          <a href="/news/<%= post.id %>" class="btn btn-sm btn-outline-primary">Weiterlesen</a>
+          <a href="/news/<%= post.id %>" class="btn btn-sm btn-outline-primary"><%= it.t('news.readMore') %></a>
         <% } else { %>
           <%~ it.md(post.content) %>
         <% } %>
@@ -26,4 +26,4 @@
   </article>
 <% }) %>
 
-<%~ include('./partials/pagination', { page: it.news.page, pages: it.news.pages, baseUrl: '/' }) %>
+<%~ include('./partials/pagination', { page: it.news.page, pages: it.news.pages, baseUrl: '/', t: it.t }) %>

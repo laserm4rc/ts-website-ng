@@ -1,2 +1,2 @@
 # ts-website-ng
-WebViewer for TS§ Servers
+WebViewer for TS3 Servers

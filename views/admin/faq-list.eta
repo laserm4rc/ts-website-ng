@@ -1,8 +1,8 @@
 <% layout('./layout') %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1 class="h3 mb-0">FAQ</h1>
-  <a href="/admin/faq/new" class="btn btn-primary">+ Neue Frage</a>
+  <h1 class="h3 mb-0"><%= it.t('admin.faq.title') %></h1>
+  <a href="/admin/faq/new" class="btn btn-primary"><%= it.t('admin.faq.add') %></a>
 </div>
 
 <% if (it.notice) { %>
@@ -10,15 +10,15 @@
 <% } %>
 
 <% if (it.items.length === 0) { %>
-  <div class="card card-body text-body-secondary">Noch keine Fragen. Leg die erste an!</div>
+  <div class="card card-body text-body-secondary"><%= it.t('admin.faq.empty') %></div>
 <% } else { %>
   <div class="table-responsive">
     <table class="table align-middle">
       <thead>
         <tr>
-          <th>Reihenfolge</th>
-          <th>Frage</th>
-          <th class="text-end">Aktionen</th>
+          <th><%= it.t('admin.faq.colOrder') %></th>
+          <th><%= it.t('admin.faq.colQuestion') %></th>
+          <th class="text-end"><%= it.t('common.actions') %></th>
         </tr>
       </thead>
       <tbody>
@@ -28,18 +28,18 @@
               <form method="post" action="/admin/faq/<%= item.id %>/move" class="btn-group btn-group-sm">
                 <input type="hidden" name="_csrf" value="<%= it.csrf %>">
                 <button type="submit" name="direction" value="up" class="btn btn-outline-secondary"
-                        aria-label="Nach oben"<%= index === 0 ? ' disabled' : '' %>>↑</button>
+                        aria-label="<%= it.t('admin.faq.moveUp') %>"<%= index === 0 ? ' disabled' : '' %>>↑</button>
                 <button type="submit" name="direction" value="down" class="btn btn-outline-secondary"
-                        aria-label="Nach unten"<%= index === it.items.length - 1 ? ' disabled' : '' %>>↓</button>
+                        aria-label="<%= it.t('admin.faq.moveDown') %>"<%= index === it.items.length - 1 ? ' disabled' : '' %>>↓</button>
               </form>
             </td>
             <td><a href="/admin/faq/<%= item.id %>/edit"><%= item.question %></a></td>
             <td class="text-end text-nowrap">
-              <a href="/admin/faq/<%= item.id %>/edit" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+              <a href="/admin/faq/<%= item.id %>/edit" class="btn btn-sm btn-outline-primary"><%= it.t('common.edit') %></a>
               <form method="post" action="/admin/faq/<%= item.id %>/delete" class="d-inline"
-                    onsubmit="return confirm('Diese Frage wirklich löschen?')">
+                    data-confirm="<%= it.t('admin.faq.confirmDelete') %>">
                 <input type="hidden" name="_csrf" value="<%= it.csrf %>">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
+                <button type="submit" class="btn btn-sm btn-outline-danger"><%= it.t('common.delete') %></button>
               </form>
             </td>
           </tr>

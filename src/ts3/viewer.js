@@ -9,10 +9,10 @@ const SPACER_PATTERN = /^\[([lcr*]?)spacer[^\]]*\](.*)$/i;
 const SPACER_ALIGN = { '': 'left', l: 'left', c: 'center', r: 'right', '*': 'fill' };
 
 const CLIENT_STATES = {
-  away: { icon: 'bi-moon-fill', color: 'text-warning', label: 'Abwesend' },
-  outputMuted: { icon: 'bi-volume-mute-fill', color: 'text-danger', label: 'Lautsprecher stumm' },
-  inputMuted: { icon: 'bi-mic-mute-fill', color: 'text-danger', label: 'Mikrofon stumm' },
-  normal: { icon: 'bi-circle-fill', color: 'text-success', label: 'Online' },
+  away: { icon: 'bi-moon-fill', color: 'text-warning', labelKey: 'common.away' },
+  outputMuted: { icon: 'bi-volume-mute-fill', color: 'text-danger', labelKey: 'viewer.outputMuted' },
+  inputMuted: { icon: 'bi-mic-mute-fill', color: 'text-danger', labelKey: 'viewer.inputMuted' },
+  normal: { icon: 'bi-circle-fill', color: 'text-success', labelKey: 'common.online' },
 };
 
 const toInt = (value) => Number.parseInt(value ?? '0', 10) || 0;
@@ -83,7 +83,9 @@ function mapClient(row, serverGroups) {
     talkPower: toInt(row.client_talk_power),
     icon: state.icon,
     color: state.color,
-    label: isAway && row.client_away_message ? `Abwesend: ${row.client_away_message}` : state.label,
+    // Der Viewer wird sprachneutral zwischengespeichert, übersetzt wird erst im Template
+    labelKey: state.labelKey,
+    awayMessage: isAway ? (row.client_away_message ?? '') : '',
     isCommander: row.client_is_channel_commander === '1',
     isRecording: row.client_is_recording === '1',
     // Wie im TS-Client: nur Gruppen mit Icon oder Namenszusatz fallen auf
@@ -143,7 +145,7 @@ async function loadViewer(serverName) {
 
   // Wie im TS-Client: hohe Talk Power zuerst, dann alphabetisch
   for (const channel of channels) {
-    channel.clients.sort((a, b) => b.talkPower - a.talkPower || a.nickname.localeCompare(b.nickname, 'de'));
+    channel.clients.sort((a, b) => b.talkPower - a.talkPower || a.nickname.localeCompare(b.nickname, 'en'));
   }
 
   return {

@@ -1,9 +1,9 @@
 <% layout('./layout') %>
 
-<h1 class="h3 mb-4">Einstellungen</h1>
+<h1 class="h3 mb-4"><%= it.t('admin.settings.title') %></h1>
 
 <% if (it.saved) { %>
-  <div class="alert alert-success">Gespeichert.</div>
+  <div class="alert alert-success"><%= it.t('common.saved') %></div>
 <% } %>
 <% if (it.errors.length > 0) { %>
   <div class="alert alert-danger">
@@ -14,11 +14,22 @@
 <form method="post" action="/admin/settings" class="card card-body gap-3" style="max-width: 36rem">
   <input type="hidden" name="_csrf" value="<%= it.csrf %>">
   <div>
-    <label class="form-label" for="siteName">Name der Webseite</label>
+    <label class="form-label" for="siteName"><%= it.t('admin.settings.siteName') %></label>
     <input class="form-control" id="siteName" name="siteName" required maxlength="60"
            value="<%= it.values.siteName %>">
   </div>
   <div>
-    <button type="submit" class="btn btn-primary">Speichern</button>
+    <div class="form-label"><%= it.t('admin.settings.sections') %></div>
+    <% it.sections.forEach((section) => { %>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="section-<%= section.id %>" name="sections"
+               value="<%= section.id %>"<%= it.sectionVisibility[section.id] ? ' checked' : '' %>>
+        <label class="form-check-label" for="section-<%= section.id %>"><%= it.t(section.titleKey) %></label>
+      </div>
+    <% }) %>
+    <div class="form-text"><%= it.t('admin.settings.sectionsHint') %></div>
+  </div>
+  <div>
+    <button type="submit" class="btn btn-primary"><%= it.t('common.save') %></button>
   </div>
 </form>

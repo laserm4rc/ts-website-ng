@@ -16,9 +16,9 @@ async function loadSelectableGroups() {
   }
 }
 
-function formData(groups, saved) {
+function formData(request, groups, saved) {
   return {
-    title: 'Admin-Status',
+    title: request.t('admin.adminStatus.title'),
     online: groups !== null,
     groups: groups ?? [],
     selected: getSetting('adminstatus_groups', []),
@@ -30,12 +30,12 @@ function formData(groups, saved) {
 export default async function adminStatusRoutes(app) {
   app.get('/', async (request, reply) => {
     const groups = await loadSelectableGroups();
-    return reply.render('./admin/adminstatus', formData(groups, request.query.saved === '1'));
+    return reply.render('./admin/adminstatus', formData(request, groups, request.query.saved === '1'));
   });
 
   app.post('/', async (request, reply) => {
     const groups = await loadSelectableGroups();
-    if (!groups) return reply.code(503).render('./admin/adminstatus', formData(null, false));
+    if (!groups) return reply.code(503).render('./admin/adminstatus', formData(request, null, false));
 
     const allowed = new Set(groups.map((group) => group.id));
     const selected = [].concat(request.body?.groups ?? [])

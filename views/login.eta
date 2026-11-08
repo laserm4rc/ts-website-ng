@@ -2,7 +2,7 @@
 
 <div class="row justify-content-center">
   <div class="col-md-6 col-lg-4">
-    <h1 class="h3 mb-3">Admin-Anmeldung</h1>
+    <h1 class="h3 mb-3"><%= it.t('login.heading') %></h1>
 
     <% if (it.error) { %>
       <div class="alert alert-danger"><%= it.error %></div>
@@ -11,16 +11,47 @@
     <form method="post" action="/login" class="card card-body gap-3">
       <input type="hidden" name="next" value="<%= it.next %>">
       <div>
-        <label class="form-label" for="username">Benutzername</label>
+        <label class="form-label" for="username"><%= it.t('login.username') %></label>
         <input class="form-control" id="username" name="username" required autocomplete="username"
-               value="<%= it.username %>" autofocus>
+               value="<%= it.username %>"<%= it.tsChallenge ? '' : ' autofocus' %>>
       </div>
       <div>
-        <label class="form-label" for="password">Passwort</label>
+        <label class="form-label" for="password"><%= it.t('login.password') %></label>
         <input class="form-control" type="password" id="password" name="password" required
                autocomplete="current-password">
       </div>
-      <button type="submit" class="btn btn-primary">Anmelden</button>
+      <button type="submit" class="btn btn-primary"><%= it.t('login.submit') %></button>
     </form>
+
+    <div class="card card-body gap-3 mt-3">
+      <h2 class="h5 mb-0"><i class="bi bi-headset me-2"></i><%= it.t('login.tsHeading') %></h2>
+
+      <% if (it.tsChallenge) { %>
+        <p class="small text-body-secondary mb-0"><%= it.t('login.tsCodeSent') %></p>
+        <form method="post" action="/login/ts/verify">
+          <input type="hidden" name="next" value="<%= it.next %>">
+          <label class="form-label" for="code"><%= it.t('login.tsCode') %></label>
+          <div class="input-group">
+            <input class="form-control font-monospace" id="code" name="code" required inputmode="numeric"
+                   pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" autofocus>
+            <button type="submit" class="btn btn-primary"><%= it.t('login.tsVerify') %></button>
+          </div>
+        </form>
+        <form method="post" action="/login/ts/cancel">
+          <input type="hidden" name="next" value="<%= it.next %>">
+          <button type="submit" class="btn btn-sm btn-outline-secondary"><%= it.t('login.tsCancel') %></button>
+        </form>
+      <% } else { %>
+        <p class="small text-body-secondary mb-0"><%= it.t('login.tsIntro') %></p>
+        <form method="post" action="/login/ts/send">
+          <input type="hidden" name="next" value="<%= it.next %>">
+          <label class="form-label" for="ts-username"><%= it.t('login.username') %></label>
+          <div class="input-group">
+            <input class="form-control" id="ts-username" name="username" required autocomplete="username">
+            <button type="submit" class="btn btn-outline-primary"><%= it.t('login.tsSend') %></button>
+          </div>
+        </form>
+      <% } %>
+    </div>
   </div>
 </div>

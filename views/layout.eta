@@ -1,28 +1,35 @@
 <!doctype html>
-<html lang="de" data-bs-theme="dark">
+<html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= it.title %> · <%= it.site.name %></title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/vendor/bootstrap-icons/bootstrap-icons.min.css">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
+  <% const navItems = [
+    { id: 'news', href: '/', key: 'nav.news' },
+    { id: 'viewer', href: '/viewer', key: 'nav.viewer' },
+    { id: 'bans', href: '/bans', key: 'nav.bans' },
+    { id: 'rules', href: '/rules', key: 'nav.rules' },
+    { id: 'faq', href: '/faq', key: 'nav.faq' },
+  ].filter((item) => it.visible[item.id]) %>
   <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
     <div class="container">
       <a class="navbar-brand fw-semibold" href="/"><%= it.site.name %></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-              aria-controls="mainNav" aria-expanded="false" aria-label="Navigation umschalten">
+              aria-controls="mainNav" aria-expanded="false" aria-label="<%= it.t('nav.toggle') %>">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="/">News</a></li>
-          <li class="nav-item"><a class="nav-link" href="/viewer">Viewer</a></li>
-          <li class="nav-item"><a class="nav-link" href="/bans">Bans</a></li>
-          <li class="nav-item"><a class="nav-link" href="/rules">Regeln</a></li>
-          <li class="nav-item"><a class="nav-link" href="/faq">FAQ</a></li>
+          <% navItems.forEach((item) => { %>
+            <li class="nav-item">
+              <a class="nav-link<%= it.path === item.href ? ' active' : '' %>" href="<%= item.href %>"><%= it.t(item.key) %></a>
+            </li>
+          <% }) %>
         </ul>
       </div>
     </div>
@@ -33,19 +40,21 @@
       <div class="col-lg-8">
         <%~ it.body %>
       </div>
-      <aside class="col-lg-4">
-        <%~ include('./partials/status', it) %>
-        <%~ include('./partials/admin-status', it) %>
+      <aside class="col-lg-4" data-live-url="/live/sidebar" data-refresh="<%= it.liveSeconds %>">
+        <%~ include('./partials/sidebar', it) %>
       </aside>
     </div>
   </main>
 
   <footer class="border-top py-3 text-center text-body-secondary small">
     <%= it.site.name %>
-    · <a href="/imprint" class="link-secondary">Impressum</a>
-    · <a href="<%= it.user ? '/admin' : '/login' %>" class="link-secondary">Admin</a>
+    <% if (it.visible.imprint) { %>
+      · <a href="/imprint" class="link-secondary"><%= it.t('nav.imprint') %></a>
+    <% } %>
+    · <a href="<%= it.user ? '/admin' : '/login' %>" class="link-secondary"><%= it.t('nav.admin') %></a>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/app.js" defer></script>
 </body>
 </html>

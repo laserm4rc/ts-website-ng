@@ -9,17 +9,17 @@
         <%~ it.md(it.page.content) %>
       </div>
     <% } else { %>
-      <p class="text-body-secondary mb-0">Für diese Seite gibt es noch keinen Inhalt.</p>
+      <p class="text-body-secondary mb-0"><%= it.t('page.empty') %></p>
     <% } %>
   </div>
 
   <% if (it.user || (it.page && it.page.content)) { %>
     <div class="card-footer d-flex justify-content-between align-items-center">
       <span class="small text-body-secondary">
-        <% if (it.page && it.page.content) { %>Stand: <%= it.fmt.formatDate(it.page.updated_at, false) %><% } %>
+        <% if (it.page && it.page.content) { %><%= it.t('page.lastUpdated', { date: it.fmt.formatDate(it.page.updated_at, false) }) %><% } %>
       </span>
       <% if (it.user) { %>
-        <a href="/admin/pages/<%= it.slug %>" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+        <a href="/admin/pages/<%= it.slug %>" class="btn btn-sm btn-outline-primary"><%= it.t('common.edit') %></a>
       <% } %>
     </div>
   <% } %>

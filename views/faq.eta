@@ -1,14 +1,14 @@
 <% layout('./layout') %>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0">FAQ</h1>
+  <h1 class="h3 mb-0"><%= it.t('faq.title') %></h1>
   <% if (it.user) { %>
-    <a href="/admin/faq" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+    <a href="/admin/faq" class="btn btn-sm btn-outline-primary"><%= it.t('common.edit') %></a>
   <% } %>
 </div>
 
 <% if (it.items.length === 0) { %>
-  <div class="card card-body text-body-secondary">Noch keine Fragen vorhanden.</div>
+  <div class="card card-body text-body-secondary"><%= it.t('faq.empty') %></div>
 <% } else { %>
   <div class="accordion" id="faqAccordion">
     <% it.items.forEach((item) => { %>

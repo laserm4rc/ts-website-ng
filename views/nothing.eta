@@ -1,0 +1,3 @@
+<% layout('./layout') %>
+
+<div class="card card-body text-body-secondary"><%= it.t('home.emptyText') %></div>

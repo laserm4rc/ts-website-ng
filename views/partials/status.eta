@@ -1,64 +1,68 @@
 <% const s = it.status %>
+<% const percent = s.maxClients > 0 ? Math.round((s.clientsOnline / s.maxClients) * 100) : 0 %>
 <div class="card shadow-sm">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <span class="fw-semibold">Server-Status</span>
+  <div class="card-header fw-semibold">
+    <i class="bi bi-reception-4 me-2"></i><%= it.t('status.title') %>
+  </div>
+
+  <div class="card-body sidebar-list">
+    <div class="sidebar-row">
+      <i class="bi bi-globe sidebar-icon"></i>
+      <span class="sidebar-label"><%= it.t('status.address') %></span>
+      <span class="sidebar-value fw-semibold text-truncate"><%= s.address %></span>
+    </div>
+
+    <div class="sidebar-row">
+      <i class="bi bi-power sidebar-icon"></i>
+      <span class="sidebar-label"><%= it.t('status.online') %></span>
+      <% if (s.online) { %>
+        <span class="sidebar-value badge rounded-pill text-bg-primary"><%= s.clientsOnline %> / <%= s.maxClients %> (<%= percent %>%)</span>
+      <% } else { %>
+        <span class="sidebar-value badge rounded-pill text-bg-danger"><%= it.t('common.offline') %></span>
+      <% } %>
+    </div>
+
     <% if (s.online) { %>
-      <span class="badge text-bg-success">Online</span>
-    <% } else { %>
-      <span class="badge text-bg-danger">Offline</span>
+      <div class="sidebar-row">
+        <i class="bi bi-trophy-fill sidebar-icon"></i>
+        <span class="sidebar-label"><%= it.t('status.topOnline') %></span>
+        <span class="sidebar-value badge rounded-pill text-bg-primary"><%= s.topOnline %></span>
+      </div>
+
+      <div class="sidebar-row">
+        <i class="bi bi-clock-fill sidebar-icon"></i>
+        <span class="sidebar-label"><%= it.t('status.uptime') %></span>
+        <span class="sidebar-value badge rounded-pill text-bg-primary"><%= it.fmt.formatUptime(s.uptime) %></span>
+      </div>
+
+      <div class="sidebar-row">
+        <i class="bi bi-info-circle-fill sidebar-icon"></i>
+        <span class="sidebar-label"><%= it.t('status.version') %></span>
+        <span class="sidebar-value badge rounded-pill text-bg-primary">
+          <%= it.t('status.versionOn', { version: s.version }) %>
+          <i class="bi <%= s.platformIcon %>" title="<%= s.platform %>"></i>
+        </span>
+      </div>
+
+      <div class="sidebar-row">
+        <i class="bi bi-bar-chart-fill sidebar-icon"></i>
+        <span class="sidebar-label"><%= it.t('status.ping') %></span>
+        <span class="sidebar-value badge rounded-pill text-bg-primary"><%= it.fmt.formatNumber(s.ping, 2) %> ms</span>
+      </div>
+
+      <div class="sidebar-row">
+        <i class="bi bi-lightning-charge-fill sidebar-icon"></i>
+        <span class="sidebar-label"><%= it.t('status.packetLoss') %></span>
+        <span class="sidebar-value badge rounded-pill text-bg-primary"><%= it.fmt.formatNumber(s.packetLoss, 2) %>%</span>
+      </div>
     <% } %>
   </div>
 
-  <% if (s.online) { %>
-    <% const usage = s.maxClients > 0 ? Math.round((s.clientsOnline / s.maxClients) * 100) : 0 %>
-    <div class="card-body pb-2">
-      <div class="d-flex justify-content-between small mb-1">
-        <span>Clients online</span>
-        <span><%= s.clientsOnline %> / <%= s.maxClients %></span>
-      </div>
-      <div class="progress" role="progressbar" aria-label="Server-Auslastung"
-           aria-valuenow="<%= usage %>" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-bar" style="width: <%= usage %>%"></div>
-      </div>
-    </div>
-    <ul class="list-group list-group-flush small">
-      <li class="list-group-item d-flex justify-content-between">
-        <span class="text-body-secondary">Uptime</span>
-        <span><%= it.fmt.formatDuration(s.uptime) %></span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between">
-        <span class="text-body-secondary">Channels</span>
-        <span><%= s.channels %></span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between">
-        <span class="text-body-secondary">Ping</span>
-        <span><%= it.fmt.formatNumber(s.ping) %> ms</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between">
-        <span class="text-body-secondary">Paketverlust</span>
-        <span><%= it.fmt.formatNumber(s.packetLoss, 2) %> %</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between gap-3">
-        <span class="text-body-secondary">Version</span>
-        <span class="text-end"><%= s.version %></span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between">
-        <span class="text-body-secondary">Plattform</span>
-        <span><%= s.platform %></span>
-      </li>
-    </ul>
-  <% } else { %>
-    <div class="card-body text-body-secondary small">
-      Der TeamSpeak-Server ist gerade nicht erreichbar.
-    </div>
-  <% } %>
-
   <div class="card-footer">
-    <div class="small text-body-secondary mb-2">Adresse: <code><%= s.address %></code></div>
     <% if (s.online) { %>
-      <a class="btn btn-primary w-100" href="<%= s.connectUrl %>">Verbinden</a>
+      <a class="btn btn-primary w-100" href="<%= s.connectUrl %>"><%= it.t('status.connect') %></a>
     <% } else { %>
-      <a class="btn btn-primary w-100 disabled" aria-disabled="true">Verbinden</a>
+      <a class="btn btn-primary w-100 disabled" aria-disabled="true"><%= it.t('status.connect') %></a>
     <% } %>
   </div>
 </div>

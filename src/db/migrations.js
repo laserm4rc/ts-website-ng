@@ -62,4 +62,32 @@ export const migrations = [
 
   CREATE INDEX idx_faq_sort ON faq(sort_order, id);
   `,
+
+  // Version 4: TeamSpeak-Login für Besucher
+  `
+  CREATE TABLE ts_sessions (
+    id                 TEXT PRIMARY KEY,
+    client_database_id INTEGER NOT NULL,
+    client_uid         TEXT NOT NULL,
+    nickname           TEXT NOT NULL,
+    created_at         TEXT NOT NULL DEFAULT (datetime('now')),
+    expires_at         INTEGER NOT NULL
+  );
+
+  CREATE INDEX idx_ts_sessions_expires ON ts_sessions(expires_at);
+  `,
+
+  // Version 5: TeamSpeak-Login und Gruppen-Assigner wurden entfernt
+  `
+  DROP TABLE IF EXISTS ts_sessions;
+  DELETE FROM settings WHERE key = 'assigner_categories';
+  `,
+
+  // Version 6: TeamSpeak-Verbindung für Admins, alte langlebige Anmeldungen beenden
+  `
+  ALTER TABLE users ADD COLUMN ts_uid TEXT;
+  ALTER TABLE users ADD COLUMN ts_nickname TEXT;
+  CREATE UNIQUE INDEX idx_users_ts_uid ON users(ts_uid) WHERE ts_uid IS NOT NULL;
+  DELETE FROM sessions;
+  `,
 ];

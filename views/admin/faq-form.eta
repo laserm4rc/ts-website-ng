@@ -1,8 +1,8 @@
 <% layout('./layout') %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1 class="h3 mb-0"><%= it.isNew ? 'Neue Frage' : 'Frage bearbeiten' %></h1>
-  <a href="/admin/faq" class="btn btn-sm btn-outline-secondary">Zurück zur Übersicht</a>
+  <h1 class="h3 mb-0"><%= it.title %></h1>
+  <a href="/admin/faq" class="btn btn-sm btn-outline-secondary"><%= it.t('common.backToList') %></a>
 </div>
 
 <% if (it.errors.length > 0) { %>
@@ -15,19 +15,19 @@
   <input type="hidden" name="_csrf" value="<%= it.csrf %>">
 
   <div>
-    <label class="form-label" for="question">Frage</label>
+    <label class="form-label" for="question"><%= it.t('admin.faq.fieldQuestion') %></label>
     <input class="form-control" id="question" name="question" required maxlength="200"
            value="<%= it.values.question %>">
   </div>
 
   <div>
-    <label class="form-label" for="answer">Antwort</label>
+    <label class="form-label" for="answer"><%= it.t('admin.faq.fieldAnswer') %></label>
     <textarea class="form-control font-monospace" id="answer" name="answer" rows="10" required
               maxlength="10000"><%= it.values.answer %></textarea>
-    <div class="form-text">Markdown wird unterstützt.</div>
+    <div class="form-text"><%= it.t('common.markdownHint') %></div>
   </div>
 
   <div>
-    <button type="submit" class="btn btn-primary">Speichern</button>
+    <button type="submit" class="btn btn-primary"><%= it.t('common.save') %></button>
   </div>
 </form>

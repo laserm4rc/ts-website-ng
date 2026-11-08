@@ -2,6 +2,6 @@
 
 <div class="text-center py-5">
   <h1 class="display-4">404</h1>
-  <p class="lead">Diese Seite gibt es (noch) nicht.</p>
-  <a href="/" class="btn btn-primary">Zur Startseite</a>
+  <p class="lead"><%= it.t('notFound.text') %></p>
+  <a href="/" class="btn btn-primary"><%= it.t('notFound.home') %></a>
 </div>

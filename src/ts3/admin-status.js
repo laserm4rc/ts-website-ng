@@ -11,9 +11,9 @@ export const ADMIN_STATUS_CACHE = 'ts3:adminstatus';
 
 const EMPTY_RESULT = 1281;
 const STATES = {
-  online: { order: 0, label: 'Online', badge: 'text-bg-success' },
-  away: { order: 1, label: 'Abwesend', badge: 'text-bg-warning' },
-  offline: { order: 2, label: 'Offline', badge: 'text-bg-secondary' },
+  online: { order: 0, labelKey: 'common.online', badge: 'text-bg-success' },
+  away: { order: 1, labelKey: 'common.away', badge: 'text-bg-warning' },
+  offline: { order: 2, labelKey: 'common.offline', badge: 'text-bg-secondary' },
 };
 
 const toInt = (value) => Number.parseInt(value ?? '0', 10) || 0;
@@ -27,14 +27,14 @@ async function loadGroupMembers(sgid) {
   }
 }
 
-/** Datenbank-ID -> 'online' oder 'away' (bei mehreren Verbindungen gewinnt 'online') */
+/** Datenbank-ID -> { state, awayMessage } (bei mehreren Verbindungen gewinnt 'online') */
 function buildOnlineMap(clientRows) {
   const online = new Map();
   for (const row of clientRows) {
     if (row.client_type !== '0') continue;
     const dbId = toInt(row.client_database_id);
-    if (row.client_away !== '1') online.set(dbId, 'online');
-    else if (!online.has(dbId)) online.set(dbId, 'away');
+    if (row.client_away !== '1') online.set(dbId, { state: 'online', awayMessage: '' });
+    else if (!online.has(dbId)) online.set(dbId, { state: 'away', awayMessage: row.client_away_message ?? '' });
   }
   return online;
 }
@@ -59,13 +59,13 @@ async function loadAdminStatus(groupIds, hideOffline) {
       if (!dbId || seen.has(dbId)) continue;
       seen.add(dbId);
 
-      const stateName = online.get(dbId) ?? 'offline';
-      if (hideOffline && stateName === 'offline') continue;
+      const { state, awayMessage } = online.get(dbId) ?? { state: 'offline', awayMessage: '' };
+      if (hideOffline && state === 'offline') continue;
 
-      members.push({ nickname: row.client_nickname || 'Unbekannt', ...STATES[stateName] });
+      members.push({ nickname: row.client_nickname || '', state, awayMessage, ...STATES[state] });
     }
 
-    members.sort((a, b) => a.order - b.order || a.nickname.localeCompare(b.nickname, 'de'));
+    members.sort((a, b) => a.order - b.order || a.nickname.localeCompare(b.nickname, 'en'));
     if (members.length > 0) {
       result.push({ name: group.name, iconId: group.iconId, members });
     }

@@ -1,30 +1,34 @@
 <% if (it.adminStatus && it.adminStatus.enabled) { %>
   <div class="card shadow-sm mt-4">
-    <div class="card-header fw-semibold">Team</div>
+    <div class="card-header fw-semibold">
+      <i class="bi bi-person-badge-fill me-2"></i><%= it.t('team.title') %>
+    </div>
 
     <% if (!it.adminStatus.online) { %>
-      <div class="card-body text-body-secondary small">Der Status ist gerade nicht verfügbar.</div>
+      <div class="card-body text-body-secondary small"><%= it.t('team.unavailable') %></div>
     <% } else if (it.adminStatus.groups.length === 0) { %>
-      <div class="card-body text-body-secondary small">Gerade ist niemand vom Team online.</div>
+      <div class="card-body text-body-secondary small"><%= it.t('team.nobodyOnline') %></div>
     <% } else { %>
-      <ul class="list-group list-group-flush small">
+      <div class="card-body team-list">
         <% it.adminStatus.groups.forEach((group) => { %>
-          <li class="list-group-item">
-            <div class="d-flex align-items-center gap-2 fw-semibold mb-1">
+          <div class="team-group">
+            <div class="team-group-title">
               <% if (group.iconId > 0) { %>
                 <%~ include('./group-icon', { group }) %>
               <% } %>
               <span><%= group.name %></span>
             </div>
             <% group.members.forEach((member) => { %>
-              <div class="d-flex justify-content-between align-items-center gap-2">
-                <span class="text-truncate"><%= member.nickname %></span>
-                <span class="badge <%= member.badge %>"><%= member.label %></span>
+              <div class="sidebar-row">
+                <span class="text-truncate"><%= member.nickname || it.t('common.unknown') %></span>
+                <span class="sidebar-value badge rounded-pill <%= member.badge %>" title="<%= member.awayMessage %>">
+                  <%= it.t(member.labelKey) %><% if (member.awayMessage) { %> <i class="bi bi-chat-dots-fill"></i><% } %>
+                </span>
               </div>
             <% }) %>
-          </li>
+          </div>
         <% }) %>
-      </ul>
+      </div>
     <% } %>
   </div>
 <% } %>

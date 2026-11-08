@@ -3,15 +3,15 @@
 <article class="card">
   <div class="card-body">
     <h1 class="h3 card-title"><%= it.post.title %></h1>
-    <%~ include('./partials/news-meta', { post: it.post, fmt: it.fmt }) %>
+    <%~ include('./partials/news-meta', { post: it.post, fmt: it.fmt, t: it.t }) %>
     <div class="news-content">
       <%~ it.md(it.post.content) %>
     </div>
   </div>
   <div class="card-footer d-flex justify-content-between">
-    <a href="/" class="btn btn-sm btn-outline-secondary">« Alle News</a>
+    <a href="/" class="btn btn-sm btn-outline-secondary"><%= it.t('news.all') %></a>
     <% if (it.user) { %>
-      <a href="/admin/news/<%= it.post.id %>/edit" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+      <a href="/admin/news/<%= it.post.id %>/edit" class="btn btn-sm btn-outline-primary"><%= it.t('common.edit') %></a>
     <% } %>
   </div>
 </article>
