@@ -1,3 +1,6 @@
+import { config } from '../config.js';
+import { getViewer } from '../ts3/viewer.js';
+import { getBans } from '../ts3/bans.js';
 import { getServerStatus } from '../ts3/status.js';
 import { listPublishedNews, getNews } from '../services/news.js';
 import { PAGES, getPage } from '../services/pages.js';
@@ -44,4 +47,24 @@ export default async function publicRoutes(app) {
     status: 'ok',
     uptime: Math.round(process.uptime()),
   }));
+
+    // --- Server-Viewer ---
+  app.get('/viewer', async (request, reply) => {
+    return reply.render('./viewer', {
+      title: 'Server-Viewer',
+      viewer: await getViewer(),
+      refreshSeconds: Math.max(config.ts3.cacheSeconds, 10),
+    });
+  });
+
+  // Nur der Baum, für die automatische Aktualisierung
+  app.get('/viewer/tree', async (request, reply) => {
+    return reply.render('./partials/viewer-tree', { viewer: await getViewer() });
+  });
+
+  // --- Bannliste ---
+  app.get('/bans', async (request, reply) => {
+    const page = Number.parseInt(request.query.page ?? '1', 10) || 1;
+    return reply.render('./bans', { title: 'Bannliste', bans: await getBans({ page }) });
+  });
 }

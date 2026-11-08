@@ -1,0 +1,39 @@
+<% const channel = it.channel %>
+<li>
+  <% if (channel.spacer) { %>
+    <div class="viewer-spacer viewer-spacer-<%= channel.spacer.align %>"><%= channel.spacer.text || ' ' %></div>
+  <% } else { %>
+        <div class="viewer-row" title="<%= channel.topic %>">
+      <i class="bi <%= channel.icon %> viewer-icon text-body-secondary"></i>
+      <span class="text-truncate"><%= channel.name %></span>
+      <% if (channel.isDefault) { %>
+        <i class="bi bi-house-door-fill viewer-flag" title="Standard-Channel"></i>
+      <% } %>
+    </div>
+  <% } %>
+
+  <% if (channel.clients.length > 0 || channel.children.length > 0) { %>
+    <ul class="viewer-list">
+      <% channel.clients.forEach((client) => { %>
+        <li>
+          <div class="viewer-row">
+            <i class="bi <%= client.icon %> <%= client.color %> viewer-icon" title="<%= client.label %>"></i>
+            <span class="text-truncate"><%= client.nickname %></span>
+            <% if (client.isCommander) { %>
+              <i class="bi bi-star-fill viewer-flag text-warning" title="Channel Commander"></i>
+            <% } %>
+            <% if (client.isRecording) { %>
+              <i class="bi bi-record-circle-fill viewer-flag text-danger" title="Nimmt auf"></i>
+            <% } %>
+            <% client.badges.forEach((badge) => { %>
+              <span class="badge text-bg-secondary"><%= badge %></span>
+            <% }) %>
+          </div>
+        </li>
+      <% }) %>
+      <% channel.children.forEach((child) => { %>
+        <%~ include('./viewer-channel', { channel: child }) %>
+      <% }) %>
+    </ul>
+  <% } %>
+</li>

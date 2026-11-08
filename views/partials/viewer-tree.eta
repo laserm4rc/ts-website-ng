@@ -1,0 +1,13 @@
+<% if (!it.viewer.online) { %>
+  <p class="text-body-secondary mb-0">Der TeamSpeak-Server ist gerade nicht erreichbar.</p>
+<% } else { %>
+  <div class="viewer-row fw-semibold">
+    <i class="bi bi-hdd-network-fill viewer-icon"></i>
+    <span class="text-truncate"><%= it.viewer.serverName %></span>
+  </div>
+  <ul class="viewer-list">
+    <% it.viewer.channels.forEach((channel) => { %>
+      <%~ include('./viewer-channel', { channel }) %>
+    <% }) %>
+  </ul>
+<% } %>

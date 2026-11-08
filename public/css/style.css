@@ -19,3 +19,52 @@
   padding: 0.75rem;
   border-radius: var(--bs-border-radius);
 }
+
+/* Server-Viewer */
+.viewer-list {
+  list-style: none;
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+#viewer-tree > .viewer-list {
+  padding-left: 0.5rem;
+}
+
+.viewer-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.1rem 0.25rem;
+  border-radius: var(--bs-border-radius-sm);
+}
+
+.viewer-row:hover {
+  background: var(--bs-tertiary-bg);
+}
+
+.viewer-icon {
+  flex: 0 0 1rem;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.viewer-flag {
+  font-size: 0.75rem;
+}
+
+.viewer-spacer {
+  overflow: hidden;
+  padding: 0.1rem 0.25rem;
+  color: var(--bs-secondary-color);
+  white-space: pre;
+  min-height: 1.5em;
+}
+
+.viewer-spacer-center {
+  text-align: center;
+}
+
+.viewer-spacer-right {
+  text-align: right;
+}
