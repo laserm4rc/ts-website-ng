@@ -13,6 +13,7 @@ import { isSetupComplete } from './setup.js';
 import { getServerStatus } from './ts3/status.js';
 import { closeQuery } from './ts3/connection.js';
 import * as fmt from './utils/format.js';
+import { renderMarkdown } from './utils/markdown.js';
 import publicRoutes from './routes/public.js';
 import setupRoutes from './routes/setup.js';
 import authRoutes from './routes/auth.js';
@@ -48,6 +49,7 @@ export async function buildServer() {
       path: request.url.split('?')[0].replace(/\/+$/, '') || '/',
       status,
       fmt,
+      md: renderMarkdown,
     });
     return this.type('text/html; charset=utf-8').send(html);
   });

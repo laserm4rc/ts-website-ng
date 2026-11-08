@@ -18,3 +18,9 @@ export function safeNext(value, fallback = '/admin') {
     ? value
     : fallback;
 }
+
+/** Wandelt eine URL-ID in eine positive Ganzzahl um, sonst null. */
+export function toId(value) {
+  const id = Number(value);
+  return Number.isSafeInteger(id) && id > 0 ? id : null;
+}

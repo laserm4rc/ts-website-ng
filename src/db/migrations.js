@@ -27,4 +27,20 @@ export const migrations = [
 
   CREATE INDEX idx_sessions_expires ON sessions(expires_at);
   `,
+
+    // Version 2: News
+  `
+  CREATE TABLE news (
+    id         INTEGER PRIMARY KEY,
+    title      TEXT NOT NULL,
+    summary    TEXT,
+    content    TEXT NOT NULL,
+    author_id  INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    published  INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT
+  );
+
+  CREATE INDEX idx_news_published_created ON news(published, created_at DESC);
+  `,
 ];

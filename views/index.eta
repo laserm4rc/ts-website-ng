@@ -1,11 +1,29 @@
 <% layout('./layout') %>
 
-<div class="card">
-  <div class="card-body">
-    <h1 class="h3 card-title">Es läuft! 🎉</h1>
-    <p class="card-text">Das Grundgerüst von ts-website-ng ist erreichbar.</p>
-    <p class="card-text mb-0">
-      Deine IP aus Sicht der Webseite: <code><%= it.visitorIp %></code>
-    </p>
-  </div>
-</div>
+<h1 class="visually-hidden">News</h1>
+
+<% if (it.news.items.length === 0) { %>
+  <div class="card card-body text-body-secondary">Noch keine News vorhanden.</div>
+<% } %>
+
+<% it.news.items.forEach((post) => { %>
+  <article class="card mb-4">
+    <div class="card-body">
+      <h2 class="h4 card-title">
+        <a href="/news/<%= post.id %>" class="link-body-emphasis text-decoration-none"><%= post.title %></a>
+      </h2>
+      <%~ include('./partials/news-meta', { post, fmt: it.fmt }) %>
+
+      <div class="news-content">
+        <% if (post.summary) { %>
+          <%~ it.md(post.summary) %>
+          <a href="/news/<%= post.id %>" class="btn btn-sm btn-outline-primary">Weiterlesen</a>
+        <% } else { %>
+          <%~ it.md(post.content) %>
+        <% } %>
+      </div>
+    </div>
+  </article>
+<% }) %>
+
+<%~ include('./partials/pagination', { page: it.news.page, pages: it.news.pages, baseUrl: '/' }) %>

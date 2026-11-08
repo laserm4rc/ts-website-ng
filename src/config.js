@@ -19,6 +19,8 @@ export const config = {
 
   isProduction: process.env.NODE_ENV !== 'development',
   logLevel: process.env.LOG_LEVEL || 'info',
+    // Zeitzone für Datumsanzeigen (Pelican setzt TZ meist automatisch)
+  timezone: process.env.TZ || 'Europe/Berlin',
 
   // Erst einschalten, wenn später ein Reverse Proxy oder Cloudflare-Tunnel davor sitzt
   trustProxy: process.env.TRUST_PROXY === '1',

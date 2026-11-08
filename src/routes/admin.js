@@ -1,3 +1,5 @@
+import adminNewsRoutes from './admin-news.js';
+
 import { config } from '../config.js';
 import { requireAdmin } from '../auth/session.js';
 import { getSetting, setSetting } from '../services/settings.js';
@@ -9,6 +11,8 @@ import { str } from '../utils/helpers.js';
 export default async function adminRoutes(app) {
   // Alles in diesem Plugin erfordert Login (+ CSRF-Prüfung bei POST)
   app.addHook('preHandler', requireAdmin);
+  // Unterbereiche (erben Login-Pflicht und CSRF-Prüfung)
+  await app.register(adminNewsRoutes, { prefix: '/news' });
 
   // --- Dashboard ---
   app.get('/', async (request, reply) => {

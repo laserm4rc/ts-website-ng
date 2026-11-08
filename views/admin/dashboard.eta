@@ -31,9 +31,10 @@
       <div class="card-body">
         <h2 class="h5 card-title">Verwaltung</h2>
         <ul class="mb-0">
+          <li><a href="/admin/news">News verwalten</a></li>
           <li><a href="/admin/settings">Einstellungen</a></li>
           <li><a href="/admin/account">Passwort ändern</a></li>
-          <li class="text-body-secondary">News, Regeln, FAQ … folgen</li>
+          <li class="text-body-secondary">Regeln, FAQ, Impressum … folgen</li>
         </ul>
       </div>
     </div>

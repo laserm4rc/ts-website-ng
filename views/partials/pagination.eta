@@ -1,0 +1,17 @@
+<% if (it.pages > 1) { %>
+  <nav aria-label="Seitennavigation">
+    <ul class="pagination justify-content-center">
+      <li class="page-item<%= it.page <= 1 ? ' disabled' : '' %>">
+        <a class="page-link" href="<%= it.baseUrl %>?page=<%= it.page - 1 %>">« Neuer</a>
+      </li>
+      <% for (let p = 1; p <= it.pages; p++) { %>
+        <li class="page-item<%= p === it.page ? ' active' : '' %>">
+          <a class="page-link" href="<%= it.baseUrl %>?page=<%= p %>"<%~ p === it.page ? ' aria-current="page"' : '' %>><%= p %></a>
+        </li>
+      <% } %>
+      <li class="page-item<%= it.page >= it.pages ? ' disabled' : '' %>">
+        <a class="page-link" href="<%= it.baseUrl %>?page=<%= it.page + 1 %>">Älter »</a>
+      </li>
+    </ul>
+  </nav>
+<% } %>

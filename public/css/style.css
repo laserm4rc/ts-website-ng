@@ -2,3 +2,20 @@
 .navbar-brand {
   letter-spacing: 0.02em;
 }
+
+/* News-Inhalte (Markdown) */
+.news-content > :last-child {
+  margin-bottom: 0;
+}
+
+.news-content blockquote {
+  border-left: 0.25rem solid var(--bs-border-color);
+  padding-left: 1rem;
+  color: var(--bs-secondary-color);
+}
+
+.news-content pre {
+  background: var(--bs-tertiary-bg);
+  padding: 0.75rem;
+  border-radius: var(--bs-border-radius);
+}

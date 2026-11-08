@@ -1,0 +1,51 @@
+<% layout('./layout') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 mb-0">News</h1>
+  <a href="/admin/news/new" class="btn btn-primary">+ Neue News</a>
+</div>
+
+<% if (it.notice) { %>
+  <div class="alert alert-success"><%= it.notice %></div>
+<% } %>
+
+<% if (it.items.length === 0) { %>
+  <div class="card card-body text-body-secondary">Noch keine News. Leg die erste an!</div>
+<% } else { %>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Titel</th>
+          <th>Status</th>
+          <th>Erstellt</th>
+          <th class="text-end">Aktionen</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% it.items.forEach((post) => { %>
+          <tr>
+            <td><a href="/admin/news/<%= post.id %>/edit"><%= post.title %></a></td>
+            <td>
+              <% if (post.published) { %>
+                <span class="badge text-bg-success">Veröffentlicht</span>
+              <% } else { %>
+                <span class="badge text-bg-warning">Entwurf</span>
+              <% } %>
+            </td>
+            <td class="small text-nowrap"><%= it.fmt.formatDate(post.created_at) %></td>
+            <td class="text-end text-nowrap">
+              <a href="/news/<%= post.id %>" target="_blank" class="btn btn-sm btn-outline-secondary">Ansehen</a>
+              <a href="/admin/news/<%= post.id %>/edit" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+              <form method="post" action="/admin/news/<%= post.id %>/delete" class="d-inline"
+                    onsubmit="return confirm('Diese News wirklich löschen?')">
+                <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
