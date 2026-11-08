@@ -1,4 +1,6 @@
 import adminNewsRoutes from './admin-news.js';
+import adminPagesRoutes from './admin-pages.js';
+import adminFaqRoutes from './admin-faq.js';
 
 import { config } from '../config.js';
 import { requireAdmin } from '../auth/session.js';

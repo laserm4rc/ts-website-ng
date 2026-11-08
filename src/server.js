@@ -23,7 +23,8 @@ export async function buildServer() {
   const app = Fastify({
     loggerInstance: logger,
     trustProxy: config.trustProxy,
-    disableRequestLogging: true,
+    // Keine Log-Zeile pro Seitenaufruf, damit die Konsole übersichtlich bleibt
+    logController: new Fastify.LogController({ disableRequestLogging: true }),
   });
 
   // Template-Engine (im Development ohne Cache, damit Änderungen sofort sichtbar sind)

@@ -43,4 +43,23 @@ export const migrations = [
 
   CREATE INDEX idx_news_published_created ON news(published, created_at DESC);
   `,
+
+    // Version 3: Textseiten (Regeln, Impressum) und FAQ
+  `
+  CREATE TABLE pages (
+    slug       TEXT PRIMARY KEY,
+    content    TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE faq (
+    id         INTEGER PRIMARY KEY,
+    question   TEXT NOT NULL,
+    answer     TEXT NOT NULL,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE INDEX idx_faq_sort ON faq(sort_order, id);
+  `,
 ];

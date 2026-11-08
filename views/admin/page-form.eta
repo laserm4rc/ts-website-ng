@@ -1,0 +1,33 @@
+<% layout('./layout') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 mb-0"><%= it.page.title %> bearbeiten</h1>
+  <a href="<%= it.page.path %>" target="_blank" class="btn btn-sm btn-outline-secondary">Ansehen</a>
+</div>
+
+<% if (it.saved) { %>
+  <div class="alert alert-success">Gespeichert.</div>
+<% } %>
+<% if (it.errors.length > 0) { %>
+  <div class="alert alert-danger">
+    <ul class="mb-0"><% it.errors.forEach((error) => { %><li><%= error %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<form method="post" action="/admin/pages/<%= it.slug %>" class="card card-body gap-3">
+  <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+
+  <div>
+    <label class="form-label" for="content">Text</label>
+    <textarea class="form-control font-monospace" id="content" name="content" rows="18"
+              maxlength="50000"><%= it.content %></textarea>
+    <div class="form-text">
+      Markdown: <code>**fett**</code>, <code>*kursiv*</code>, <code>[Link](https://…)</code>,
+      <code>1. Nummerierung</code>, <code>- Aufzählung</code>, <code>## Überschrift</code>
+    </div>
+  </div>
+
+  <div>
+    <button type="submit" class="btn btn-primary">Speichern</button>
+  </div>
+</form>

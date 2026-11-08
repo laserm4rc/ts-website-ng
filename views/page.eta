@@ -1,0 +1,26 @@
+<% layout('./layout') %>
+
+<article class="card">
+  <div class="card-body">
+    <h1 class="h3 card-title mb-3"><%= it.title %></h1>
+
+    <% if (it.page && it.page.content) { %>
+      <div class="news-content">
+        <%~ it.md(it.page.content) %>
+      </div>
+    <% } else { %>
+      <p class="text-body-secondary mb-0">Für diese Seite gibt es noch keinen Inhalt.</p>
+    <% } %>
+  </div>
+
+  <% if (it.user || (it.page && it.page.content)) { %>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <span class="small text-body-secondary">
+        <% if (it.page && it.page.content) { %>Stand: <%= it.fmt.formatDate(it.page.updated_at, false) %><% } %>
+      </span>
+      <% if (it.user) { %>
+        <a href="/admin/pages/<%= it.slug %>" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+      <% } %>
+    </div>
+  <% } %>
+</article>

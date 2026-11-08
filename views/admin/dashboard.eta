@@ -32,9 +32,11 @@
         <h2 class="h5 card-title">Verwaltung</h2>
         <ul class="mb-0">
           <li><a href="/admin/news">News verwalten</a></li>
+          <li><a href="/admin/pages/rules">Regeln bearbeiten</a></li>
+          <li><a href="/admin/faq">FAQ verwalten</a></li>
+          <li><a href="/admin/pages/imprint">Impressum bearbeiten</a></li>
           <li><a href="/admin/settings">Einstellungen</a></li>
           <li><a href="/admin/account">Passwort ändern</a></li>
-          <li class="text-body-secondary">Regeln, FAQ, Impressum … folgen</li>
         </ul>
       </div>
     </div>

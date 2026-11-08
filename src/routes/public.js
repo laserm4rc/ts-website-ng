@@ -1,5 +1,7 @@
 import { getServerStatus } from '../ts3/status.js';
 import { listPublishedNews, getNews } from '../services/news.js';
+import { PAGES, getPage } from '../services/pages.js';
+import { listFaq } from '../services/faq.js';
 import { toId } from '../utils/helpers.js';
 
 const NEWS_PER_PAGE = 5;
@@ -21,6 +23,18 @@ export default async function publicRoutes(app) {
       return reply;
     }
     return reply.render('./news', { title: post.title, post });
+  });
+
+  // --- Textseiten (Regeln, Impressum) ---
+  for (const [slug, page] of Object.entries(PAGES)) {
+    app.get(page.path, async (request, reply) => {
+      return reply.render('./page', { title: page.title, slug, page: getPage(slug) });
+    });
+  }
+
+  // --- FAQ ---
+  app.get('/faq', async (request, reply) => {
+    return reply.render('./faq', { title: 'FAQ', items: listFaq() });
   });
 
   // --- API ---

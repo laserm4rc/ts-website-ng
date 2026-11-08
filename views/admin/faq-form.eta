@@ -1,0 +1,33 @@
+<% layout('./layout') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 mb-0"><%= it.isNew ? 'Neue Frage' : 'Frage bearbeiten' %></h1>
+  <a href="/admin/faq" class="btn btn-sm btn-outline-secondary">Zurück zur Übersicht</a>
+</div>
+
+<% if (it.errors.length > 0) { %>
+  <div class="alert alert-danger">
+    <ul class="mb-0"><% it.errors.forEach((error) => { %><li><%= error %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<form method="post" action="/admin/faq<%= it.isNew ? '' : '/' + it.id %>" class="card card-body gap-3">
+  <input type="hidden" name="_csrf" value="<%= it.csrf %>">
+
+  <div>
+    <label class="form-label" for="question">Frage</label>
+    <input class="form-control" id="question" name="question" required maxlength="200"
+           value="<%= it.values.question %>">
+  </div>
+
+  <div>
+    <label class="form-label" for="answer">Antwort</label>
+    <textarea class="form-control font-monospace" id="answer" name="answer" rows="10" required
+              maxlength="10000"><%= it.values.answer %></textarea>
+    <div class="form-text">Markdown wird unterstützt.</div>
+  </div>
+
+  <div>
+    <button type="submit" class="btn btn-primary">Speichern</button>
+  </div>
+</form>
